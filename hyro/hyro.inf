@@ -1,0 +1,62 @@
+;
+; hyro.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = hyro.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+hyro.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%hyro.DeviceDesc% = hyro_Device, Root\hyro ; TODO: edit hw-id
+
+[hyro_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+hyro.sys
+
+;-------------- Service installation
+[hyro_Device.NT.Services]
+AddService = hyro,%SPSVCINST_ASSOCSERVICE%, hyro_Service_Inst
+
+; -------------- hyro driver install sections
+[hyro_Service_Inst]
+DisplayName    = %hyro.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\hyro.sys
+
+[hyro_Device.NT.Wdf]
+KmdfService = hyro, hyro_wdfsect
+
+[hyro_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "hyro Installation Disk"
+hyro.DeviceDesc = "hyro Device"
+hyro.SVCDESC = "hyro Service"
