@@ -39,3 +39,7 @@
 #define HV_LOG_TRACE(Format, ...)
 
 #endif
+
+#ifndef BOOL
+typedef ULONG BOOL;
+#endif

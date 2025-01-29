@@ -18,26 +18,19 @@ DRIVER_UNLOAD DriverUnload;
 NTSTATUS
 DriverEntry(_In_ PDRIVER_OBJECT DriverObject,
             _In_ PUNICODE_STRING RegistryPath) {
-  NTSTATUS status = STATUS_SUCCESS;
-  BOOLEAN vtxSupported = FALSE;
-
   UNREFERENCED_PARAMETER(RegistryPath);
 
   DriverObject->DriverUnload = DriverUnload;
 
-  status = CheckVtxSupport(&vtxSupported);
-  if (!NT_SUCCESS(status)) {
-    HV_LOG_ERROR("Failed to check VT-x support: 0x%X", status);
-    return status;
+  if (!VmxAllocVCpuState(&g_arrVCpu)) {
+    return STATUS_UNSUCCESSFUL;
   }
 
-  if (!vtxSupported) {
-    HV_LOG_ERROR("This processor does not support VT-x");
-    return STATUS_NOT_SUPPORTED;
+  if (!VmxInitHypervisor(g_arrVCpu)) {
+    return STATUS_UNSUCCESSFUL;
   }
 
-  HV_LOG_INFO("VT-x is supported on this processor");
-  return status;
+  return STATUS_SUCCESS;
 }
 
 VOID DriverUnload(_In_ PDRIVER_OBJECT DriverObject) {
