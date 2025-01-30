@@ -21,7 +21,7 @@ BOOL CheckVtxSupport() {
   return TRUE;
 }
 
-BOOL VmxAllocVCpuState(PVCPU *pArrVCpu) { 
+BOOL VmxAllocVCpuState() { 
   ULONG processorCount = KeQueryActiveProcessorCount(0);
   VCPU *arrVCpu;
 
@@ -31,7 +31,7 @@ BOOL VmxAllocVCpuState(PVCPU *pArrVCpu) {
     return FALSE;
   }
 
-  *pArrVCpu = arrVCpu;
+  g_arrVCpu = arrVCpu;
   HV_LOG_INFO("VCpu state allocated @ 0x%llx", arrVCpu);
 
   return TRUE;
@@ -114,17 +114,24 @@ BOOL VmxInitHypervisorIdPr(PVCPU pVCpu) {
   return TRUE;
 }
 
-BOOL VmxInitHypervisor(VCPU* arrVCpu) {
+BOOL VmxInitHypervisor() {
   if (!CheckVtxSupport() || !CheckEptSupport()) {
     return FALSE;
   }
 
+  // Allocation of VCPU state
+  if (!VmxAllocVCpuState()) {
+    return FALSE;
+  }
+
   // EPT Initialization
-  RtlZeroMemory(&g_EptState, sizeof(EPT_STATE));
-  EptBuildMtrrMap(&g_EptState);
+  EptBuildMtrrMap();
+  if (!EptInitialize()) {
+    return FALSE;
+  }
 
   // TODO: Change this to all cpu using dpc routines
-  if (!VmxInitHypervisorIdPr(&arrVCpu[0])) {
+  if (!VmxInitHypervisorIdPr(&g_arrVCpu[0])) {
     return FALSE;
   }
   HV_LOG_INFO("Hypervisor initialized");

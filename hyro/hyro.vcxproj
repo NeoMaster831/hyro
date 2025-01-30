@@ -114,12 +114,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ept.c" />
+    <ClCompile Include="global.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mem.c" />
     <ClCompile Include="vtx.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ept.h" />
+    <ClInclude Include="global.h" />
     <ClInclude Include="ia32.h" />
     <ClInclude Include="mem.h" />
     <ClInclude Include="utils.h" />

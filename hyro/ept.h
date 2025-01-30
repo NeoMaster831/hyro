@@ -4,32 +4,9 @@
 #include <intrin.h>
 
 #include "ia32.h"
+#include "global.h"
 #include "mem.h"
 #include "utils.h"
-
-#define MAX_VARIABLE_RANGE_MTRRS 255
-#define NUM_FIXED_RANGE_MTRRS (11 * 8) // ((1 + 2 + 8) * RTL_NUMBER_OF_FIELD(IA32_MTRR_FIXED_RANGE_TYPE, s.Types))
-#define NUM_MTRR_ENTRIES (MAX_VARIABLE_RANGE_MTRRS + NUM_FIXED_RANGE_MTRRS) // 255 + 88 = 343
-
-typedef union _IA32_MTRR_FIXED_RANGE_TYPE {
-  UINT64 AsUInt;
-  struct {
-    UINT8 Types[8];
-  } s;
-} IA32_MTRR_FIXED_RANGE_TYPE;
-
-typedef struct _MTRR_RANGE_DESCRIPTOR {
-  SIZE_T physicalBaseAddr;
-  SIZE_T physicalEndAddress;
-  UINT8 memoryType;
-  BOOLEAN fixedRange;
-} MTRR_RANGE_DESCRIPTOR, *PMTRR_RANGE_DESCRIPTOR;
-
-typedef struct _EPT_STATE {
-  UINT8 defaultMemoryType;
-  SIZE_T mtrrCount;
-  MTRR_RANGE_DESCRIPTOR mtrrMap[NUM_MTRR_ENTRIES];
-} EPT_STATE, *PEPT_STATE;
 
 /*
  * @brief Check if EPT is supported on the current processor
@@ -39,11 +16,58 @@ BOOL CheckEptSupport();
 
 /*
  * @brief Build the MTRR map
- * @param pEptState - The EPT state pointer
  */
-VOID EptBuildMtrrMap(PEPT_STATE pEptState);
+VOID EptBuildMtrrMap();
 
 /*
- * @brief Global EPT state 
+ * @brief Get the PML2 entry
+ * @param pEptPageTable - The EPT page table pointer
+ * @param physicalAddr - The physical address
+ * @return `PEPT_PML2_ENTRY` - The PML2 entry
  */
-EPT_STATE g_EptState;
+PEPT_PML2_ENTRY EptGetPml2(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr);
+
+/*
+ * @brief Check if the EPT is valid for large page
+ * @param pfn - The page frame number
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+BOOL EptIsValidForLargePage(SIZE_T pfn);
+
+/*
+ * @brief Get the memory type for the EPT
+ * @param pfn - The page frame number
+ * @param isLargePage - TRUE if the page is a large page
+ * @return `UINT8` - The memory type
+ */
+UINT8 EptGetMemoryType(SIZE_T pfn, BOOL isLargePage);
+
+/*
+ * @brief Split the large page
+ * @param pEptPageTable - The EPT page table pointer
+ * @param physicalAddr - The physical address where we want to split the page
+ */
+BOOL EptSplitLargePage(PEPT_PAGE_TABLE pEptPageTable,
+                       SIZE_T physicalAddr);
+
+/*
+ * @brief Build the PML2 entry
+ * @param pEptPageTable - The EPT page table pointer
+ * @param newEntry - The new entry
+ * @param pfn - The page frame number
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+BOOL EptBuildPml2(PEPT_PAGE_TABLE pEptPageTable, PEPT_PML2_ENTRY newEntry,
+                     SIZE_T pfn);
+
+/*
+ * @brief Build the EPT page table
+ * @return `EPT_PAGE_TABLE` - The EPT page table
+ */
+PEPT_PAGE_TABLE EptBuildPageTable();
+
+/*
+ * @brief Initialize the EPT in all VCPUs
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+BOOL EptInitialize();

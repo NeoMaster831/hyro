@@ -22,11 +22,7 @@ DriverEntry(_In_ PDRIVER_OBJECT DriverObject,
 
   DriverObject->DriverUnload = DriverUnload;
 
-  if (!VmxAllocVCpuState(&g_arrVCpu)) {
-    return STATUS_UNSUCCESSFUL;
-  }
-
-  if (!VmxInitHypervisor(g_arrVCpu)) {
+  if (!VmxInitHypervisor()) {
     return STATUS_UNSUCCESSFUL;
   }
 

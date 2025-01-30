@@ -21,3 +21,7 @@ PVOID MemAlloc_ZNP(SIZE_T size) {
   }
   return result;
 }
+
+VOID MemFree_P(PVOID p) { ExFreePoolWithTag(p, POOL_TAG); }
+
+VOID MemFree_C(PVOID p) { MmFreeContiguousMemory(p); }

@@ -5,29 +5,9 @@
 
 #include "ia32.h"
 #include "ept.h"
+#include "global.h"
 #include "mem.h"
 #include "utils.h"
-
-#define CPUID_PROCESSOR_INFO 0x1
-#define VMX_SUPPORT_BIT (1 << 5) // CPUID.1:ECX.VMX[bit 5] (Intel SDM Vol. 3C, Section 23.6)
-
-#define VMXON_REGION_SIZE 0x1000
-#define VMCS_REGION_SIZE 0x1000
-
-typedef struct _VMXON_REGION_DESCRIPTOR {
-  PVOID vmxonRegion;
-  PHYSICAL_ADDRESS vmxonRegionPhys;
-} VMXON_REGION_DESCRIPTOR, *PVMXON_REGION_DESCRIPTOR;
-
-typedef struct _VMCS_REGION_DESCRIPTOR {
-  PVOID vmcsRegion;
-  PHYSICAL_ADDRESS vmcsRegionPhys;
-} VMCS_REGION_DESCRIPTOR, *PVMCS_REGION_DESCRIPTOR;
-
-typedef struct _VCPU {
-  VMXON_REGION_DESCRIPTOR vmxonRegionDescriptor;
-  VMCS_REGION_DESCRIPTOR vmcsRegionDescriptor;
-} VCPU, *PVCPU;
 
 /*
  * @brief Check if VT-x is supported on the current processor
@@ -37,9 +17,8 @@ BOOL CheckVtxSupport();
 
 /*
  * @brief Allocate VCpu state
- * @param pArrVCpu - The virtual CPU array pointer's address
  */
-BOOL VmxAllocVCpuState(PVCPU *pArrVCpu);
+BOOL VmxAllocVCpuState();
 
 /*
  * @brief Enable VMX operation
@@ -67,11 +46,9 @@ BOOL VmxInitHypervisorIdPr(PVCPU pVCpu);
 
 /*
  * @brief Initialize the hypervisor
- * @param pArrVCpu - The virtual CPU array pointer, modern CPUs have multiple
- * cores
  * @return `BOOL` - TRUE if the operation was successful
  */
-BOOL VmxInitHypervisor(VCPU *arrVCpu);
+BOOL VmxInitHypervisor();
 
 /*
  * @brief Allocate the VMXON region
@@ -84,8 +61,3 @@ BOOLEAN VmxAllocVmxonRegion(PVMXON_REGION_DESCRIPTOR pVmxonRegDesc);
  * @param pVmcsRegDesc - The VMCS region descriptor pointer
  */
 BOOLEAN VmxAllocVmcsRegion(PVMCS_REGION_DESCRIPTOR pVmcsRegDesc);
-
-/*
- * @brief Global virtual CPU array
- */
-VCPU *g_arrVCpu;
