@@ -2,18 +2,10 @@
 #include "utils.h"
 #include <ntddk.h>
 
-DRIVER_INITIALIZE DriverEntry;
-DRIVER_UNLOAD DriverUnload;
-
-#ifdef ALLOC_PRAGMA
-#pragma alloc_text(INIT, DriverEntry)
-#pragma alloc_text(PAGE, DriverUnload)
-#endif
-
-//
-// Logging is enabled by default
-//
-#define LOGGING_ENABLED
+VOID DriverUnload(_In_ PDRIVER_OBJECT DriverObject) {
+  UNREFERENCED_PARAMETER(DriverObject);
+  PAGED_CODE();
+}
 
 NTSTATUS
 DriverEntry(_In_ PDRIVER_OBJECT DriverObject,
@@ -27,9 +19,4 @@ DriverEntry(_In_ PDRIVER_OBJECT DriverObject,
   }
 
   return STATUS_SUCCESS;
-}
-
-VOID DriverUnload(_In_ PDRIVER_OBJECT DriverObject) {
-  UNREFERENCED_PARAMETER(DriverObject);
-  PAGED_CODE();
 }

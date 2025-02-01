@@ -20,6 +20,9 @@
     <Filter Include="Header Files\include">
       <UniqueIdentifier>{da26c878-2f13-429f-882c-c16f4dfe7e20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\asm">
+      <UniqueIdentifier>{e1dc81d7-ba80-4d02-b9c2-932f1cf736ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyro.inf">
@@ -42,6 +45,9 @@
     <ClCompile Include="global.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="exit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vtx.h">
@@ -62,5 +68,16 @@
     <ClInclude Include="global.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="exit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="vtx.asm">
+      <Filter>Source Files\asm</Filter>
+    </MASM>
+    <MASM Include="global.asm">
+      <Filter>Source Files\asm</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

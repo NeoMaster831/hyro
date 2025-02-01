@@ -3,6 +3,48 @@
 #include <ntddk.h>
 #include "ia32.h"
 
+#define TYPES
+
+#ifndef BOOL
+typedef ULONG BOOL;
+#endif
+
+// #enddef
+
+#define GUEST_REGISTER_STRUCTURE
+
+typedef struct GUEST_REGS {
+  UINT64 rax; // 0x00
+  UINT64 rcx; // 0x08
+  UINT64 rdx; // 0x10
+  UINT64 rbx; // 0x18
+  UINT64 rsp; // 0x20
+  UINT64 rbp; // 0x28
+  UINT64 rsi; // 0x30
+  UINT64 rdi; // 0x38
+  UINT64 r8;  // 0x40
+  UINT64 r9;  // 0x48
+  UINT64 r10; // 0x50
+  UINT64 r11; // 0x58
+  UINT64 r12; // 0x60
+  UINT64 r13; // 0x68
+  UINT64 r14; // 0x70
+  UINT64 r15; // 0x78
+} GUEST_REGS, *PGUEST_REGS;
+
+// #enddef
+
+#define NT_IMPORTS
+
+typedef struct _NT_KPROCESS {
+  DISPATCHER_HEADER Header;
+  LIST_ENTRY ProfileListHead;
+  ULONG_PTR DirectoryTableBase;
+  UCHAR Data[1];
+} NT_KPROCESS, *PNT_KPROCESS;
+
+// #enddef
+
 #define EPT_STRUCTURES //
 
 #define MAX_VARIABLE_RANGE_MTRRS 255
@@ -79,6 +121,13 @@ extern EPT_STATE g_EptState;
 
 #define VMXON_REGION_SIZE 0x1000
 #define VMCS_REGION_SIZE 0x1000
+#define VMM_STACK_SIZE 0x8000
+
+#define HOST_IDT_DESCRIPTOR_COUNT 256
+#define HOST_GDT_DESCRIPTOR_COUNT 10
+#define HOST_INTERRUPT_STACK_SIZE 0x4000
+
+#define VMCS_GUEST_DEBUGCTL_HIGH 0x00002803
 
 typedef struct _VMXON_REGION_DESCRIPTOR {
   PVOID vmxonRegion;
@@ -90,16 +139,162 @@ typedef struct _VMCS_REGION_DESCRIPTOR {
   PHYSICAL_ADDRESS vmcsRegionPhys;
 } VMCS_REGION_DESCRIPTOR, *PVMCS_REGION_DESCRIPTOR;
 
+typedef struct _VMX_VMXOFF_STATE {
+  BOOLEAN IsVmxoffExecuted; // Shows whether the VMXOFF executed or not
+  UINT64 GuestRip;          // Rip address of guest to return
+  UINT64 GuestRsp;          // Rsp address of guest to return
+} VMX_VMXOFF_STATE, *PVMX_VMXOFF_STATE;
+
 typedef struct _VCPU {
   VMXON_REGION_DESCRIPTOR vmxonRegionDescriptor;
   VMCS_REGION_DESCRIPTOR vmcsRegionDescriptor;
+
   PEPT_PAGE_TABLE eptPageTable;
+
   EPT_POINTER eptPointer;
+  PVOID vmmStack;
+
+  PVOID msrBitmapVirt;
+  PHYSICAL_ADDRESS msrBitmapPhys;
+
+  PVOID ioBitmapAVirt;
+  PHYSICAL_ADDRESS ioBitmapAPhys;
+  PVOID ioBitmapBVirt;
+  PHYSICAL_ADDRESS ioBitmapBPhys;
+
+  PVOID hostIdt;
+  PVOID hostGdt;
+  PVOID hostTss;
+  PVOID hostInterruptStack;
+
+  // -- Live state
+  BOOL launched;
+  PGUEST_REGS guestRegs;
+  BOOL isOnVmxRootMode;
+  BOOL incrementRip;
+  UINT64 lastVmexitRip;
+  UINT64 exitQual;
+  VMX_VMXOFF_STATE vmxoffState;
+  // --
+
 } VCPU, *PVCPU;
 
 /*
  * @brief Global virtual CPU array
  */
 extern VCPU *g_arrVCpu;
+
+/*
+ * @brief Global invalid MSR bitmap
+ */
+extern UINT64 *g_invalidMsrBitmap;
+
+// #enddef
+
+#define DPC_IMPORTS //
+
+NTKERNELAPI
+_IRQL_requires_max_(APC_LEVEL)
+    _IRQL_requires_min_(PASSIVE_LEVEL) _IRQL_requires_same_ VOID
+    KeGenericCallDpc(_In_ PKDEFERRED_ROUTINE Routine, _In_opt_ PVOID Context);
+
+NTKERNELAPI
+_IRQL_requires_(DISPATCH_LEVEL) _IRQL_requires_same_ VOID
+    KeSignalCallDpcDone(_In_ PVOID SystemArgument1);
+
+NTKERNELAPI
+_IRQL_requires_(DISPATCH_LEVEL) _IRQL_requires_same_ LOGICAL
+    KeSignalCallDpcSynchronize(_In_ PVOID SystemArgument2);
+
+// #enddef
+
+#define BITWISE_OPERATIONS //
+
+#define BITS_PER_LONG (sizeof(unsigned long) * 8)
+#define BITMAP_ENTRY(_nr, _bmap) ((_bmap))[(_nr) / BITS_PER_LONG]
+#define BITMAP_SHIFT(_nr) ((_nr) % BITS_PER_LONG)
+
+void SetBit(int BitNumber, unsigned long * Addr);
+
+// #enddef
+
+#define ASM_GET_SET_REGISTERS
+
+extern unsigned short AGetCs();
+extern unsigned short AGetDs();
+extern unsigned short AGetEs();
+extern unsigned short AGetFs();
+extern unsigned short AGetGs();
+extern unsigned short AGetSs();
+extern unsigned short AGetLdtr();
+extern unsigned short AGetTr();
+extern unsigned long long AGetGdtBase();
+extern unsigned long long AGetIdtBase();
+extern unsigned short AGetGdtLimit();
+extern unsigned short AGetIdtLimit();
+extern void ASetDs(unsigned short ds);
+extern void ASetEs(unsigned short es);
+extern void ASetFs(unsigned short fs);
+extern void ASetSs(unsigned short ss);
+extern UINT32 AGetAccessRights(unsigned short sel);
+extern unsigned short AGetRflags();
+
+// #enddef
+
+#define GET_SET_REGISTERS
+
+typedef union {
+  struct {
+    UINT32 Type : 4;
+    UINT32 DescriptorType : 1;
+    UINT32 DescriptorPrivilegeLevel : 2;
+    UINT32 Present : 1;
+    UINT32 Reserved1 : 4;
+    UINT32 AvailableBit : 1;
+    UINT32 LongMode : 1;
+    UINT32 DefaultBig : 1;
+    UINT32 Granularity : 1;
+    UINT32 Unusable : 1;
+    UINT32 Reserved2 : 15;
+  } s;
+
+  UINT32 AsUInt;
+} VMX_SEGMENT_ACCESS_RIGHTS_TYPE0;
+
+typedef struct _VMX_SEGMENT_SELECTOR {
+  UINT16 Selector;
+  VMX_SEGMENT_ACCESS_RIGHTS_TYPE0 Attributes;
+  UINT32 Limit;
+  UINT64 Base;
+} VMX_SEGMENT_SELECTOR, *PVMX_SEGMENT_SELECTOR;
+
+/*
+ * @brief Get the segment descriptor
+ * @param gdtBase - The GDT base
+ * @param selector - The selector
+ * @param segSel - The segment selector, where the result will be stored
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+BOOL GetSegmentDescriptor(PUINT8 gdtBase, UINT16 selector,
+                     PVMX_SEGMENT_SELECTOR segSel);
+
+/*
+ * @brief Get System Directory Table Base
+ */
+UINT64 GetSsDTBase();
+
+// #enddef
+
+#define MSR_STRUCTURE
+
+typedef union _MSR {
+  struct {
+    ULONG Low;
+    ULONG High;
+  } Fields;
+
+  UINT64 Flags;
+
+} MSR, *PMSR;
 
 // #enddef

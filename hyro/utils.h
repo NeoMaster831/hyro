@@ -40,6 +40,4 @@
 
 #endif
 
-#ifndef BOOL
-typedef ULONG BOOL;
-#endif
+#define UNUSED_PARAMETER(x) (void)(x)
