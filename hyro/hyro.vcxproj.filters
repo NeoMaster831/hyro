@@ -73,10 +73,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="vtx.asm">
+    <MASM Include="aglobal.asm">
       <Filter>Source Files\asm</Filter>
     </MASM>
-    <MASM Include="global.asm">
+    <MASM Include="avtx.asm">
       <Filter>Source Files\asm</Filter>
     </MASM>
   </ItemGroup>
