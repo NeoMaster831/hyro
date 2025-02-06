@@ -23,6 +23,12 @@
     <Filter Include="Source Files\asm">
       <UniqueIdentifier>{e1dc81d7-ba80-4d02-b9c2-932f1cf736ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\handlers">
+      <UniqueIdentifier>{0ae44a15-c9e7-43f1-9b2b-ce7bdfa2a75a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\handlers">
+      <UniqueIdentifier>{20cee5df-7ee2-479b-b540-dd6bd6c2cf6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyro.inf">
@@ -48,6 +54,9 @@
     <ClCompile Include="exit.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="hdlrgeneral.c">
+      <Filter>Source Files\handlers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vtx.h">
@@ -70,6 +79,9 @@
     </ClInclude>
     <ClInclude Include="exit.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hdlrgeneral.h">
+      <Filter>Header Files\handlers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -119,6 +119,7 @@
   <ItemGroup>
     <ClCompile Include="ept.c" />
     <ClCompile Include="exit.c" />
+    <ClCompile Include="hdlrgeneral.c" />
     <ClCompile Include="global.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mem.c" />
@@ -128,6 +129,7 @@
     <ClInclude Include="ept.h" />
     <ClInclude Include="exit.h" />
     <ClInclude Include="global.h" />
+    <ClInclude Include="hdlrgeneral.h" />
     <ClInclude Include="ia32.h" />
     <ClInclude Include="mem.h" />
     <ClInclude Include="utils.h" />

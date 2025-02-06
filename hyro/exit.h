@@ -4,6 +4,7 @@
 
 #include "global.h"
 #include "utils.h"
+#include "hdlrgeneral.h"
 
 /*
  * @brief VM-exit handler

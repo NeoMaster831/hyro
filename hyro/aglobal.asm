@@ -17,6 +17,9 @@ PUBLIC AGetIdtLimit
 PUBLIC AGetAccessRights
 PUBLIC AGetRflags
 
+; Type2
+PUBLIC AInvVpid
+
 .code _text
 
 AGetGdtBase PROC
@@ -161,5 +164,24 @@ AGetRflags PROC
     ret
     
 AGetRflags ENDP
+
+; -- type2 --
+
+AInvVpid PROC
+    invvpid rcx, oword ptr [rdx]
+    jz      ErrorWithStatus
+    jc      ErrorCodeFailed
+    xor     rax, rax
+    ret
+    
+ErrorWithStatus:
+    mov     rax, 1
+    ret
+
+ErrorCodeFailed:
+    mov     rax, 2
+    ret
+
+AInvVpid ENDP
 
 END

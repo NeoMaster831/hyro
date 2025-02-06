@@ -47,3 +47,64 @@ BOOL GetSegmentDescriptor(PUINT8 gdtBase, UINT16 selector,
 
   return TRUE;
 }
+
+#define A(a, b) a |= b
+void InjectInterruption(INTERRUPT_TYPE InterruptionType,
+    EXCEPTION_VECTORS Vector, BOOLEAN DeliverErrorCode,
+    UINT32 ErrorCode) {
+  UINT8 s = 0;
+  INTERRUPT_INFO inject = {0};
+
+  UNUSED_PARAMETER(s);
+
+  inject.Fields.Valid = TRUE;
+  inject.Fields.InterruptType = InterruptionType;
+  inject.Fields.Vector = Vector;
+  inject.Fields.DeliverCode = DeliverErrorCode;
+  
+  A(s, __vmx_vmwrite(VMCS_CTRL_VMENTRY_INTERRUPTION_INFORMATION_FIELD, inject.Flags));
+  if (DeliverErrorCode) {
+    A(s, __vmx_vmwrite(VMCS_CTRL_VMENTRY_EXCEPTION_ERROR_CODE, ErrorCode));
+  }
+}
+#undef A
+
+void InjectUD(PVCPU pVCpu) {
+  InjectInterruption(INTERRUPT_TYPE_HARDWARE_EXCEPTION,
+                     EXCEPTION_VECTOR_UNDEFINED_OPCODE, FALSE, 0);
+  pVCpu->incrementRip = FALSE;
+}
+
+#define A(a, b) a |= b
+void InjectGP() {
+  UINT64 exitInstrLength;
+  UINT8 s = 0;
+
+  UNUSED_PARAMETER(s);
+
+  InjectInterruption(INTERRUPT_TYPE_HARDWARE_EXCEPTION,
+                     EXCEPTION_VECTOR_GENERAL_PROTECTION_FAULT, TRUE, 0);
+
+  A(s, __vmx_vmread(VMCS_VMEXIT_INSTRUCTION_LENGTH, &exitInstrLength));
+  A(s, __vmx_vmwrite(VMCS_CTRL_VMENTRY_INSTRUCTION_LENGTH, exitInstrLength));
+}
+#undef A
+
+void InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor) {
+  INVVPID_DESCRIPTOR *TargetDescriptor = NULL;
+  INVVPID_DESCRIPTOR ZeroDescriptor = {0};
+
+  if (!Descriptor) {
+    TargetDescriptor = &ZeroDescriptor;
+  } else {
+    TargetDescriptor = Descriptor;
+  }
+
+  AInvVpid(Type, TargetDescriptor);
+}
+
+BOOL CheckAddressCanonical(UINT64 address) {
+  // TODO: add compatibility (but who the fuck doesnt use 48-bit address???)
+  return ((address & 0xFFFF000000000000) == 0) ||
+         ((address & 0xFFFF000000000000) == 0xFFFF000000000000);
+}

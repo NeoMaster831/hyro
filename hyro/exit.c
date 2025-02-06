@@ -25,8 +25,52 @@ BOOL VmxExitHandler(PGUEST_REGS pGuestRegs) {
     goto RETURN_ROUTINE;
   }
 
-  HV_LOG_INFO("VM-exit reason: 0x%llx", exitReason);
-  HV_LOG_INFO("VM-exit qual: 0x%llx", pVCpu->exitQual);
+  // Those are causing freaky lags
+  //HV_LOG_INFO("VM-exit reason: 0x%llx", exitReason);
+  //HV_LOG_INFO("VM-exit qual: 0x%llx", pVCpu->exitQual);
+
+  switch (exitReason) {
+// ---------------------------------------------------------------
+  case VMX_EXIT_REASON_TRIPLE_FAULT: {
+    HdlrTripleFault();
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_VMCLEAR:
+  case VMX_EXIT_REASON_EXECUTE_VMPTRLD:
+  case VMX_EXIT_REASON_EXECUTE_VMPTRST:
+  case VMX_EXIT_REASON_EXECUTE_VMREAD:
+  case VMX_EXIT_REASON_EXECUTE_VMRESUME:
+  case VMX_EXIT_REASON_EXECUTE_VMWRITE:
+  case VMX_EXIT_REASON_EXECUTE_VMXOFF:
+  case VMX_EXIT_REASON_EXECUTE_VMXON:
+  case VMX_EXIT_REASON_EXECUTE_VMLAUNCH: {
+    HdlrUnconditionalExit(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_INVEPT:
+  case VMX_EXIT_REASON_EXECUTE_INVVPID:
+  case VMX_EXIT_REASON_EXECUTE_GETSEC:
+  case VMX_EXIT_REASON_EXECUTE_INVD: {
+    // TODO: Will implement later
+    HdlrUnconditionalExit(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_MOV_CR: {
+    HdlrMovCr(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_RDMSR: {
+    // Do nothing
+  } break;
+  case VMX_EXIT_REASON_IO_SMI:
+  case VMX_EXIT_REASON_SMI: {
+    // Do nothing
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_WRMSR: {
+    HdlrWrmsr(pVCpu->guestRegs);
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_CPUID: {
+    HdlrCpuid(pVCpu);
+  } break;
+// ---------------------------------------------------------------
+  }
+
 
 RETURN_ROUTINE:
   
