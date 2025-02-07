@@ -41,11 +41,11 @@ void HdlrHyclCpuid(PVCPU pVCpu) {
   param1 &= 0xF;
 
   switch (callCode) {
-  case HYRO_CPUID_XORCALL_CONST:
-    g_Hvm.memory[param1] ^= param2;
+  case HYRO_CPUID_NANDCALL_CONST:
+    g_Hvm.memory[param1] = ~(g_Hvm.memory[param1] & param2);
     break;
-  case HYRO_CPUID_XORCALL_MEMORY:
-    g_Hvm.memory[param1] ^= g_Hvm.memory[param2 & 0xF];
+  case HYRO_CPUID_NANDCALL_MEMORY:
+    g_Hvm.memory[param1] = ~(g_Hvm.memory[param1] & g_Hvm.memory[param2 & 0xF]);
     break;
   case HYRO_CPUID_OUT:
     pVCpu->guestRegs->r15 = g_Hvm.memory[param1];
