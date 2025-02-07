@@ -125,6 +125,16 @@ void HdlrWrmsr(PGUEST_REGS pGuestRegs) {
 void HdlrCpuid(PVCPU pVCpu) {
   INT32 cpuInfo[4] = {0};
   PGUEST_REGS pGuestRegs = pVCpu->guestRegs;
+  BOOL isHyrocall = FALSE;
+
+  isHyrocall =
+      (pGuestRegs->r10 ^ pGuestRegs->r11 ^ pGuestRegs->r12) ==
+      (HYRO_SIGNATURE_HIGH ^ HYRO_SIGNATURE_MEDIUM ^ HYRO_SIGNATURE_LOW);
+
+  if (isHyrocall) {
+    HdlrHyclCpuid(pVCpu);
+    return;
+  }
 
   __cpuidex(cpuInfo, (INT32)pGuestRegs->rax, (INT32)pGuestRegs->rcx);
 
@@ -244,9 +254,9 @@ BOOL HdlrVmcall(PVCPU pVCpu) {
   BOOLEAN isHyroVmcall = FALSE;
   PGUEST_REGS pGuestRegs = pVCpu->guestRegs;
 
-  isHyroVmcall = (pGuestRegs->r10 == HYRO_SIGNATURE_LOW &&
-                  pGuestRegs->r11 == HYRO_SIGNATURE_MEDIUM &&
-                  pGuestRegs->r12 == HYRO_SIGNATURE_HIGH);
+  isHyroVmcall = (pGuestRegs->r10 ^ pGuestRegs->r11 ^
+                pGuestRegs->r12) == (HYRO_SIGNATURE_HIGH ^ HYRO_SIGNATURE_MEDIUM ^
+                HYRO_SIGNATURE_LOW);
 
   if (isHyroVmcall) {
     return HdlrHyclVmcall(pVCpu);

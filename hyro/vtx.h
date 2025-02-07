@@ -9,7 +9,6 @@
 #include "global.h"
 #include "mem.h"
 #include "utils.h"
-#include "tstvtx.h"
 
 /*
  * @brief PIN-Based Execution

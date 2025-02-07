@@ -3,6 +3,7 @@
 VCPU *g_arrVCpu = NULL;
 UINT64 *g_invalidMsrBitmap = NULL;
 EPT_STATE g_EptState = {0};
+HVM g_Hvm = {0};
 
 void SetBit(int BitNumber, unsigned long* Addr) {
   BITMAP_ENTRY(BitNumber, Addr) |= (1UL << BITMAP_SHIFT(BitNumber));

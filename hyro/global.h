@@ -443,3 +443,11 @@ typedef enum _NMI_BROADCAST_ACTION_TYPE {
 } NMI_BROADCAST_ACTION_TYPE;
 
 // #enddef
+
+#define PROB_VM
+
+typedef struct _HVM {
+  UINT64 memory[0x10];
+} HVM, *PHVM;
+
+extern HVM g_Hvm;
