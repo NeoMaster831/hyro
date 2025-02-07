@@ -68,6 +68,62 @@ BOOL VmxExitHandler(PGUEST_REGS pGuestRegs) {
   case VMX_EXIT_REASON_EXECUTE_CPUID: {
     HdlrCpuid(pVCpu);
   } break;
+  case VMX_EXIT_REASON_EXECUTE_IO_INSTRUCTION: {
+    HdlrIoInstruction(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_EPT_VIOLATION: {
+    // TODO: will implement ept hook later
+  } break;
+  case VMX_EXIT_REASON_EPT_MISCONFIGURATION: {
+    HdlrEptMisconfiguration();
+  } break;
+  case VMX_EXIT_REASON_EXCEPTION_OR_NMI: {
+    // TODO: will implement nmi breaks
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_VMCALL: {
+    if (HdlrVmcall(pVCpu))
+      HV_LOG_INFO("VMCALL succeed");
+    else
+      HV_LOG_ERROR("VMCALL failed");
+  } break;
+  case VMX_EXIT_REASON_EXTERNAL_INTERRUPT: {
+    // TODO: will implement external interrupt
+  } break;
+  case VMX_EXIT_REASON_INTERRUPT_WINDOW: {
+    // TODO: will implement interrupt window
+  } break;
+  case VMX_EXIT_REASON_NMI_WINDOW: {
+    HdlrNmiWindowExit(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_MONITOR_TRAP_FLAG: {
+    // TODO: will implement mtfs
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_HLT: {
+    __halt();
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_RDTSC:
+  case VMX_EXIT_REASON_EXECUTE_RDTSCP: {
+    // TODO: emulate rdtsc
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_RDPMC: {
+    HdlrRdpmc(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_MOV_DR: {
+    HdlrMovDr(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_EXECUTE_XSETBV: {
+    HdlrXsetbv(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_VMX_PREEMPTION_TIMER_EXPIRED: {
+    HdlrVmxPreemptionTimerExpired(pVCpu);
+  } break;
+  case VMX_EXIT_REASON_PAGE_MODIFICATION_LOG_FULL: {
+    HdlrDirtyLogging(pVCpu);
+  } break;
+  default: {
+    HV_LOG_ERROR("Unknown vm-exit reason: 0x%llx", exitReason);
+    break;
+  }
 // ---------------------------------------------------------------
   }
 

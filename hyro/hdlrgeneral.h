@@ -1,6 +1,8 @@
 #pragma once
 
 #include "global.h"
+#include "hdlrhyrocall.h"
+
 #include <intrin.h>
 
 /*
@@ -33,3 +35,57 @@ void HdlrWrmsr(PGUEST_REGS pGuestRegs);
  * @param pVCpu - The virtual CPU pointer
  */
 void HdlrCpuid(PVCPU pVCpu);
+
+/*
+ * @brief Handler for I/O instruction.
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrIoInstruction(PVCPU pVCpu);
+
+/*
+ * @brief Handler for EPT misconfiguration.
+ */
+void HdlrEptMisconfiguration();
+
+/*
+ * @brief Handler for VMCALL instruction.
+ * @param pVCpu - The virtual CPU pointer
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+BOOL HdlrVmcall(PVCPU pVCpu);
+
+/*
+ * @brief Handler for NMI WINDOW EXIT
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrNmiWindowExit(PVCPU pVCpu);
+
+/*
+ * @brief Handler for RDPMC instruction
+ * @param pVCpu - The virtual CPU pointer
+ */ 
+void HdlrRdpmc(PVCPU pVCpu);
+
+/*
+ * @brief Handler for MOV DR instruction.
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrMovDr(PVCPU pVCpu);
+
+/*
+ * @brief Handler for XSETBV instruction.
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrXsetbv(PVCPU pVCpu);
+
+/*
+ * @brief Handler for preemption timer expirement... but why??
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrVmxPreemptionTimerExpired(PVCPU pVCpu);
+
+/*
+ * @brief Handler for dirty logging
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrDirtyLogging(PVCPU pVCpu);

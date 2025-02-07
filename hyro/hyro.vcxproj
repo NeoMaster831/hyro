@@ -121,8 +121,10 @@
     <ClCompile Include="exit.c" />
     <ClCompile Include="hdlrgeneral.c" />
     <ClCompile Include="global.c" />
+    <ClCompile Include="hdlrhyrocall.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mem.c" />
+    <ClCompile Include="tstvtx.c" />
     <ClCompile Include="vtx.c" />
   </ItemGroup>
   <ItemGroup>
@@ -130,13 +132,16 @@
     <ClInclude Include="exit.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="hdlrgeneral.h" />
+    <ClInclude Include="hdlrhyrocall.h" />
     <ClInclude Include="ia32.h" />
     <ClInclude Include="mem.h" />
+    <ClInclude Include="tstvtx.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vtx.h" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="aglobal.asm" />
+    <MASM Include="atstvtx.asm" />
     <MASM Include="avtx.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

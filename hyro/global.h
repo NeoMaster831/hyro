@@ -285,6 +285,11 @@ BOOL GetSegmentDescriptor(PUINT8 gdtBase, UINT16 selector,
  */
 UINT64 GetSsDTBase();
 
+/*
+ * @brief check if xcr0 is valid
+ */
+BOOL isXCr0Valid(XCR0 XCr0);
+
 // #enddef
 
 #define MSR_STRUCTURE
@@ -392,9 +397,13 @@ void InjectUD(PVCPU pVCpu);
 
 /*
  * @brief Inject a #GP exception
- * @param pVCpu - The virtual CPU pointer
  */
 void InjectGP();
+
+/*
+ * @brief Inject a breakpoint exception
+ */
+void InjectBP();
 
 // #enddef
 
@@ -419,3 +428,18 @@ void InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor);
  * @return `BOOL` - TRUE if the address is canonical
  */
 BOOL CheckAddressCanonical(UINT64 address);
+
+// #enddef
+
+#define NMI_STUFF
+
+typedef enum _NMI_BROADCAST_ACTION_TYPE {
+  NMI_BROADCAST_ACTION_NONE = 0,
+  NMI_BROADCAST_ACTION_TEST,
+  NMI_BROADCAST_ACTION_REQUEST,
+  NMI_BROADCAST_ACTION_INVALIDATE_EPT_CACHE_SINGLE_CONTEXT,
+  NMI_BROADCAST_ACTION_INVALIDATE_EPT_CACHE_ALL_CONTEXTS,
+
+} NMI_BROADCAST_ACTION_TYPE;
+
+// #enddef

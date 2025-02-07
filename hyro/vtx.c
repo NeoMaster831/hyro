@@ -211,6 +211,8 @@ BOOL VmxInitHypervisor() {
 
   KeGenericCallDpc(DpcAVmxLaunchGuestIdPr, NULL);
 
+  TstHyroTestcall(0x1337, 0x31337, 0x6974); // Individually test VMCALLs
+
   HV_LOG_INFO("Hypervisor initialized");
   return TRUE;
 }

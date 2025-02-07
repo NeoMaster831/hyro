@@ -41,3 +41,7 @@
 #endif
 
 #define UNUSED_PARAMETER(x) (void)(x)
+
+#define HYRO_SIGNATURE_LOW 0x80187c4d01ad09cc
+#define HYRO_SIGNATURE_MEDIUM 0x1a2b99b4c7f9d191
+#define HYRO_SIGNATURE_HIGH 0x913a2b99b4c7f9d1
