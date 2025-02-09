@@ -35,12 +35,6 @@
     <Filter Include="Source Files\modules">
       <UniqueIdentifier>{9ae464f5-1c48-4b3e-9d37-ddc94ab8d48f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\tests">
-      <UniqueIdentifier>{185d27bd-2d02-4581-be9a-feb952c33b75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\tests">
-      <UniqueIdentifier>{8fc7d8ba-0abc-465d-a526-3a2dcf14e851}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyro.inf">
@@ -72,9 +66,6 @@
     <ClCompile Include="hdlrhyrocall.c">
       <Filter>Source Files\handlers</Filter>
     </ClCompile>
-    <ClCompile Include="tstvtx.c">
-      <Filter>Source Files\tests</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vtx.h">
@@ -104,18 +95,12 @@
     <ClInclude Include="hdlrhyrocall.h">
       <Filter>Header Files\handlers</Filter>
     </ClInclude>
-    <ClInclude Include="tstvtx.h">
-      <Filter>Header Files\tests</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="aglobal.asm">
       <Filter>Source Files\asm</Filter>
     </MASM>
     <MASM Include="avtx.asm">
-      <Filter>Source Files\asm</Filter>
-    </MASM>
-    <MASM Include="atstvtx.asm">
       <Filter>Source Files\asm</Filter>
     </MASM>
   </ItemGroup>

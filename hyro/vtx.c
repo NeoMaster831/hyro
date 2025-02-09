@@ -211,7 +211,8 @@ BOOL VmxInitHypervisor() {
 
   KeGenericCallDpc(DpcAVmxLaunchGuestIdPr, NULL);
 
-  TstHyroTestcall(0x1337, 0x31337, 0x6974); // Individually test VMCALLs
+  AHyroVmcall(HYRO_VMCALL_TEST, 0x1337, 0x31337, 0x6974);
+  // Individually test the vmcall
 
   HV_LOG_INFO("Hypervisor initialized");
   return TRUE;
@@ -703,3 +704,137 @@ UINT64 VmxReturnStackPointerForVmxoff() {
 UINT64 VmxReturnInstructionPointerForVmxoff() {
   return g_arrVCpu[KeGetCurrentProcessorNumberEx(NULL)].vmxoffState.GuestRip;
 }
+
+#define A(a, b) a |= b
+VOID VmxRestoreRegisters() {
+  UINT64 fsBase, gsBase, gdtrBase, gdtrLimit, idtrBase, idtrLimit, dsSelector,
+      esSelector, ssSelector, fsSelector;
+  UINT8 s = 0;
+
+  UNUSED_PARAMETER(s);
+
+  A(s, __vmx_vmread(VMCS_GUEST_FS_BASE, &fsBase));
+  __writemsr(IA32_FS_BASE, fsBase);
+
+  A(s, __vmx_vmread(VMCS_GUEST_GS_BASE, &gsBase));
+  __writemsr(IA32_GS_BASE, gsBase);
+
+  A(s, __vmx_vmread(VMCS_GUEST_GDTR_BASE, &gdtrBase));
+  A(s, __vmx_vmread(VMCS_GUEST_GDTR_LIMIT, &gdtrLimit));
+  AReloadGdtr((void*)gdtrBase, (unsigned long)gdtrLimit);
+
+  A(s, __vmx_vmread(VMCS_GUEST_IDTR_BASE, &idtrBase));
+  A(s, __vmx_vmread(VMCS_GUEST_IDTR_LIMIT, &idtrLimit));
+  AReloadIdtr((void *)idtrBase, (unsigned long)idtrLimit);
+
+  A(s, __vmx_vmread(VMCS_GUEST_DS_SELECTOR, &dsSelector));
+  ASetDs((unsigned short)dsSelector);
+  A(s, __vmx_vmread(VMCS_GUEST_ES_SELECTOR, &esSelector));
+  ASetEs((unsigned short)esSelector);
+  A(s, __vmx_vmread(VMCS_GUEST_SS_SELECTOR, &ssSelector));
+  ASetSs((unsigned short)ssSelector);
+  A(s, __vmx_vmread(VMCS_GUEST_FS_SELECTOR, &fsSelector));
+  ASetFs((unsigned short)fsSelector);
+
+  return;
+}
+#undef A
+
+#define A(a, b) a |= b
+VOID VmxDisable(PVCPU pVCpu) {
+  UINT64 guestRsp = 0;
+  UINT64 guestRip = 0;
+  UINT64 guestCr3 = 0;
+  UINT64 exitInstructionLen = 0;
+  UINT8 s = 0;
+
+  UNUSED_PARAMETER(s);
+
+  A(s, __vmx_vmread(VMCS_GUEST_CR3, &guestCr3));
+  __writecr3(guestCr3);
+
+  A(s, __vmx_vmread(VMCS_GUEST_RIP, &guestRip));
+  A(s, __vmx_vmread(VMCS_GUEST_RSP, &guestRsp));
+  A(s, __vmx_vmread(VMCS_VMEXIT_INSTRUCTION_LENGTH, &exitInstructionLen));
+
+  guestRip += exitInstructionLen;
+
+  pVCpu->vmxoffState.GuestRsp = guestRsp;
+  pVCpu->vmxoffState.GuestRip = guestRip;
+  pVCpu->vmxoffState.IsVmxoffExecuted = TRUE;
+
+  VmxRestoreRegisters();
+
+  VmxClearVmcs(pVCpu);
+
+  __vmx_off();
+
+  pVCpu->launched = FALSE;
+
+  CR4 cr4 = {.AsUInt = __readcr4()};
+  cr4.VmxEnable = FALSE;
+  __writecr4(cr4.AsUInt);
+
+  HV_LOG_INFO("VMXOFF executed; VMX disabled");
+  
+  return;
+}
+#undef A
+
+BOOLEAN DpcVmxTerminateIdPr(KDPC* Dpc, PVOID DeferredContext,
+    PVOID SystemArgument1, PVOID SystemArgument2) {
+  UNREFERENCED_PARAMETER(Dpc);
+  UNREFERENCED_PARAMETER(DeferredContext);
+  VmxTerminateIdPr();
+  KeSignalCallDpcSynchronize(SystemArgument2);
+  KeSignalCallDpcDone(SystemArgument1);
+  return TRUE;
+}
+
+#define A(k) if (k) MemFree_C((PVOID)k); k = NULL
+#define B(k) if (k) MemFree_P((PVOID)k); k = NULL
+VOID VmxTerminateIdPr() {
+  ULONG currentProcessor = KeGetCurrentProcessorNumberEx(NULL);
+  PVCPU pVCpu = &g_arrVCpu[currentProcessor];
+
+  AHyroVmcall(HYRO_VMCALL_VMXOFF, 0, 0, 0);
+  
+  A(pVCpu->vmxonRegionDescriptor.vmxonRegion);
+  A(pVCpu->vmcsRegionDescriptor.vmcsRegion);
+  B(pVCpu->vmmStack);
+  B(pVCpu->msrBitmapVirt);
+  B(pVCpu->ioBitmapAVirt);
+  B(pVCpu->ioBitmapBVirt);
+  B(pVCpu->hostIdt);
+  B(pVCpu->hostGdt);
+  B(pVCpu->hostTss);
+  B(pVCpu->hostInterruptStack);
+
+  HV_LOG_INFO("Hypervisor terminated for VCPU[%d]", currentProcessor);
+}
+#undef A
+#undef B
+
+#define A(k) if (k) MemFree_C((PVOID)k); k = NULL
+#define B(k) if (k) MemFree_P((PVOID)k); k = NULL
+VOID VmxTerminate() {
+  ULONG processorCount = KeQueryActiveProcessorCount(0);
+
+  HV_LOG_INFO("Terminating the hypervisor");
+
+  KeGenericCallDpc(DpcVmxTerminateIdPr, NULL);
+
+  B(g_invalidMsrBitmap);
+
+  for (ULONG i = 0; i < processorCount; i++) {
+    A(g_arrVCpu[i].eptPageTable);
+  }
+
+  RtlZeroMemory(&g_EptState, sizeof(g_EptState));
+
+  B(g_arrVCpu);
+
+  HV_LOG_INFO("Hypervisor fully terminated.");
+}
+#undef A
+#undef B

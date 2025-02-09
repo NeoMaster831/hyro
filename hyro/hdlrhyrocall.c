@@ -14,7 +14,7 @@ BOOL HdlrHyclVmcall(PVCPU pVCpu) {
     status = TRUE;
   } break;
   case HYRO_VMCALL_VMXOFF: {
-    HV_LOG_WARNING("HYRO_VMCALL_VMXOFF: unimplemented");
+    VmxDisable(pVCpu);
     status = TRUE;
   } break;
   default: {

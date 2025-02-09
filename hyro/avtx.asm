@@ -1,6 +1,7 @@
 PUBLIC AVmxLaunchGuestBrdgIdPr
 PUBLIC AVmxRestoreState
 PUBLIC AVmxExitHandlerBrdg
+PUBLIC AHyroVmcall
 
 EXTERN VmxLaunchGuestIdPr:PROC
 EXTERN VmxExitHandler:PROC
@@ -171,5 +172,24 @@ AVmxoffHandler PROC
     ret
 
 AVmxoffHandler ENDP
+
+AHyroVmcall PROC
+
+	pushfq
+	push r10
+	push r11
+	push r12
+	mov r10, 80187c4d01ad09ccH
+	mov r11, 1a2b99b4c7f9d191H
+	mov r12, 913a2b99b4c7f9d1H
+	vmcall
+	pop r12
+	pop r11
+	pop r10
+	popfq
+
+	ret
+
+AHyroVmcall ENDP
 
 end

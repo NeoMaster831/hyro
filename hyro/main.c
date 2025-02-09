@@ -5,6 +5,7 @@
 VOID DriverUnload(_In_ PDRIVER_OBJECT DriverObject) {
   UNREFERENCED_PARAMETER(DriverObject);
   PAGED_CODE();
+  VmxTerminate();
 }
 
 NTSTATUS
@@ -15,6 +16,7 @@ DriverEntry(_In_ PDRIVER_OBJECT DriverObject,
   DriverObject->DriverUnload = DriverUnload;
 
   if (!VmxInitHypervisor()) {
+    VmxTerminate();
     return STATUS_UNSUCCESSFUL;
   }
 

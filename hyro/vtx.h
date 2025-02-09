@@ -9,7 +9,6 @@
 #include "global.h"
 #include "mem.h"
 #include "utils.h"
-#include "tstvtx.h"
 
 /*
  * @brief PIN-Based Execution
@@ -280,3 +279,33 @@ UINT64 VmxReturnStackPointerForVmxoff();
  * @return UINT64 - The instruction pointer
  */
 UINT64 VmxReturnInstructionPointerForVmxoff();
+
+/*
+ * @brief Restore the registers
+ */
+VOID VmxRestoreRegisters();
+
+/*
+ * @brief Disable VMX operation
+ * @param pVCpu - The virtual CPU pointer
+ */
+VOID VmxDisable(PVCPU pVCpu);
+
+/*
+ * @brief Dpc wrapper for `DpcVmxTerminateIdPr`
+ */
+BOOLEAN DpcVmxTerminateIdPr(KDPC *Dpc, PVOID DeferredContext,
+                               PVOID SystemArgument1, PVOID SystemArgument2);
+
+/*
+ * @brief Terminate the VMX operation in Individual Processor.
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+VOID VmxTerminateIdPr();
+
+/*
+ * @brief Terminate the VMX operation
+ */
+VOID VmxTerminate();
+
+extern void AHyroVmcall(UINT64 c, UINT64 p1, UINT64 p2, UINT64 p3);

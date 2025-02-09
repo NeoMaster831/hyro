@@ -16,6 +16,8 @@ PUBLIC AGetGdtLimit
 PUBLIC AGetIdtLimit
 PUBLIC AGetAccessRights
 PUBLIC AGetRflags
+PUBLIC AReloadGdtr
+PUBLIC AReloadIdtr
 
 ; Type2
 PUBLIC AInvVpid
@@ -164,6 +166,30 @@ AGetRflags PROC
     ret
     
 AGetRflags ENDP
+
+AReloadGdtr PROC
+
+    push	rcx
+    shl		rdx, 48
+    push	rdx
+    lgdt	fword ptr [rsp+6]
+    pop		rax
+    pop		rax
+    ret
+    
+AReloadGdtr ENDP
+
+AReloadIdtr PROC
+    
+    push	rcx
+    shl		rdx, 48
+    push	rdx
+    lidt	fword ptr [rsp+6]
+    pop		rax
+    pop		rax
+    ret
+    
+AReloadIdtr ENDP
 
 ; -- type2 --
 

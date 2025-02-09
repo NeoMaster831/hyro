@@ -241,6 +241,9 @@ extern void ASetSs(unsigned short ss);
 extern UINT32 AGetAccessRights(unsigned short sel);
 extern unsigned short AGetRflags();
 
+extern void AReloadGdtr(void *gdtBase, unsigned long gdtLimit);
+extern void AReloadIdtr(void *idtBase, unsigned long idtLimit);
+
 // #enddef
 
 #define GET_SET_REGISTERS
@@ -441,5 +444,12 @@ typedef enum _NMI_BROADCAST_ACTION_TYPE {
   NMI_BROADCAST_ACTION_INVALIDATE_EPT_CACHE_ALL_CONTEXTS,
 
 } NMI_BROADCAST_ACTION_TYPE;
+
+// #enddef
+
+#define HYRO_VMCALL_NUMBERS
+
+#define HYRO_VMCALL_TEST 0x0
+#define HYRO_VMCALL_VMXOFF 0x1
 
 // #enddef
