@@ -1,0 +1,62 @@
+;
+; hyroapiw.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = hyroapiw.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+hyroapiw.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%hyroapiw.DeviceDesc% = hyroapiw_Device, Root\hyroapiw ; TODO: edit hw-id
+
+[hyroapiw_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+hyroapiw.sys
+
+;-------------- Service installation
+[hyroapiw_Device.NT.Services]
+AddService = hyroapiw,%SPSVCINST_ASSOCSERVICE%, hyroapiw_Service_Inst
+
+; -------------- hyroapiw driver install sections
+[hyroapiw_Service_Inst]
+DisplayName    = %hyroapiw.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\hyroapiw.sys
+
+[hyroapiw_Device.NT.Wdf]
+KmdfService = hyroapiw, hyroapiw_wdfsect
+
+[hyroapiw_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "hyroapiw Installation Disk"
+hyroapiw.DeviceDesc = "hyroapiw Device"
+hyroapiw.SVCDESC = "hyroapiw Service"
