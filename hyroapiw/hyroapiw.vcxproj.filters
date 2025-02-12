@@ -23,6 +23,9 @@
     <Filter Include="Source Files\api">
       <UniqueIdentifier>{20f770dd-2dd8-4b5d-8fcc-abc8ab07a8a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\asm">
+      <UniqueIdentifier>{1f116d4e-3542-4072-88cb-16df012a23fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyroapiw.inf">
@@ -56,5 +59,10 @@
     <ClInclude Include="apitest.h">
       <Filter>Header Files\api</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="aglobal.asm">
+      <Filter>Source Files\asm</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

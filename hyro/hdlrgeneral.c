@@ -249,7 +249,9 @@ BOOL HdlrVmcall(PVCPU pVCpu) {
                   pGuestRegs->r12 == HYRO_SIGNATURE_HIGH);
 
   if (isHyroVmcall) {
-    return HdlrHyclVmcall(pVCpu);
+    BOOL result = HdlrHyclVmcall(pVCpu);
+    pGuestRegs->rax = result ? HYRO_VMCALL_SUCCESS : 0;
+    return result;
   } else {
     // Since we don't use Hyper-V, we don't need to handle this shit
   }

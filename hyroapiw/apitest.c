@@ -1,6 +1,5 @@
 #include "apitest.h"
 
 BOOL HyroApiwTest() {
-  APIW_LOG_INFO("HyroAPIW test");
-  return TRUE;
+  return HYROCALL_SUCCESS(ACallHyro(HYRO_VMCALL_TEST, 0x69, 0x74, 0x420));
 }

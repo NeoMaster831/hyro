@@ -174,7 +174,10 @@ AVmxoffHandler PROC
 AVmxoffHandler ENDP
 
 AHyroVmcall PROC
-
+    
+    ; The API Wrapper contains here with rax = 0, but here, we will not use it.
+    ; Because we do all things in the VMX Root Mode, we don't have actual G-H
+    ; transitions. So I will just remove the rax = 0 part.
 	pushfq
 	push r10
 	push r11
