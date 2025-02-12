@@ -17,6 +17,12 @@
       <UniqueIdentifier>{8E41214B-6785-4CFE-B992-037D68949A14}</UniqueIdentifier>
       <Extensions>inf;inv;inx;mof;mc;</Extensions>
     </Filter>
+    <Filter Include="Header Files\api">
+      <UniqueIdentifier>{01d15f94-76c9-4537-b7b3-3d98df3c3338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api">
+      <UniqueIdentifier>{20f770dd-2dd8-4b5d-8fcc-abc8ab07a8a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyroapiw.inf">
@@ -27,5 +33,28 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ioctl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="global.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="apitest.c">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ioctl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="apitest.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
