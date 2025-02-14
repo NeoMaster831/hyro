@@ -14,6 +14,7 @@ BOOL HdlrHyclVmcall(PVCPU pVCpu) {
     status = TRUE;
   } break;
   case HYRO_VMCALL_VMXOFF: {
+    // Only used for development, user cannot access this... maybe ?? idk
     HV_LOG_INFO("HYRO_VMCALL_VMXOFF");
     VmxDisable(pVCpu);
     status = TRUE;

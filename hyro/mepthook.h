@@ -27,11 +27,21 @@ typedef struct _EPT_HOOK_PAGE {
  */
 BOOL MEptHookAddHook(UINT64 physicalAddr);
 
+// ---------------------------------------------------------------------------
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+
 /*
  * @brief Remove EPT hook
  * @param physicalAddr - The physical address to unhook
  */
 VOID MEptHookRemoveHook(UINT64 physicalAddr);
+
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// ---------------------------------------------------------------------------
 
 /*
  * @brief Get page of specific physical Address
@@ -42,6 +52,8 @@ PEPT_HOOK_PAGE MEptHookGetHook(UINT64 physAddr);
 
 /*
  * @brief Repair original page of specific hook
+ * @param pVCpu - The virtual CPU pointer
+ * @param pEptHook - The hook
  */
 VOID MEptHookRepairOriginal(PVCPU pVCpu, PEPT_HOOK_PAGE pEptHook);
 
@@ -66,11 +78,21 @@ BOOL MEptHookHandleViolation(PVCPU pVCpu);
  */
 VOID MEptHookActivateHook(PEPT_HOOK_PAGE pEptHook);
 
+// ---------------------------------------------------------------------------
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+
 /*
  * @brief Deactivate EPT hook
  * @param pEptHook - The hook
  */
 VOID MEptHookDeactivateHook(PEPT_HOOK_PAGE pEptHook);
+
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// DO NOT USE THIS FUNCTION IF VMX IS ACTIVE
+// ---------------------------------------------------------------------------
 
 /*
  * @brief Initialize EPT hook module
