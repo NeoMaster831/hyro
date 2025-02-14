@@ -117,6 +117,7 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dsll.c" />
     <ClCompile Include="ept.c" />
     <ClCompile Include="exit.c" />
     <ClCompile Include="hdlrgeneral.c" />
@@ -124,9 +125,11 @@
     <ClCompile Include="hdlrhyrocall.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mem.c" />
+    <ClCompile Include="mepthook.c" />
     <ClCompile Include="vtx.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dsll.h" />
     <ClInclude Include="ept.h" />
     <ClInclude Include="exit.h" />
     <ClInclude Include="global.h" />
@@ -134,6 +137,7 @@
     <ClInclude Include="hdlrhyrocall.h" />
     <ClInclude Include="ia32.h" />
     <ClInclude Include="mem.h" />
+    <ClInclude Include="mepthook.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vtx.h" />
   </ItemGroup>

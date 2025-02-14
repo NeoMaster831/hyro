@@ -27,7 +27,7 @@ void HdlrMovCr(PVCPU pVCpu) {
     case VMX_EXIT_QUALIFICATION_REGISTER_CR3:
       newCr3 = (*regPtr & ~(1ULL << 63));
       A(s, __vmx_vmwrite(VMCS_GUEST_CR3, newCr3));
-      InvVpid(InvvpidSingleContext, &desc);
+      A(s, InvVpid(InvvpidSingleContext, &desc));
       break;
     case VMX_EXIT_QUALIFICATION_REGISTER_CR4:
       A(s, __vmx_vmwrite(VMCS_GUEST_CR4, *regPtr));
@@ -256,7 +256,7 @@ BOOL HdlrVmcall(PVCPU pVCpu) {
     // Since we don't use Hyper-V, we don't need to handle this shit
   }
 
-  return TRUE;
+  return FALSE;
 }
 
 void HdlrNmiWindowExit(PVCPU pVCpu) {
@@ -414,4 +414,11 @@ void HdlrDirtyLogging(PVCPU pVCpu) {
   HV_LOG_INFO("Dirty logging exit");
   // TODO: PML buffer flush
   pVCpu->incrementRip = FALSE;
+}
+
+void HdlrEptViolation(PVCPU pVCpu) {
+  if (!MEptHookHandleViolation(pVCpu)) {
+    HV_LOG_ERROR("EPT violation (by unexpected vector)");
+    __debugbreak();
+  }
 }

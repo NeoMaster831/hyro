@@ -19,7 +19,7 @@ PUBLIC AGetRflags
 PUBLIC AReloadGdtr
 PUBLIC AReloadIdtr
 
-; Type2
+PUBLIC AInvept
 PUBLIC AInvVpid
 
 .code _text
@@ -191,7 +191,24 @@ AReloadIdtr PROC
     
 AReloadIdtr ENDP
 
-; -- type2 --
+AInvept PROC PUBLIC
+
+    invept  rcx, oword ptr [rdx]
+    jz ErrorWithStatus
+    jc ErrorCodeFailed
+    
+    xor     rax, rax
+    ret
+
+ErrorWithStatus: 
+    mov     rax, 1
+    ret
+
+ErrorCodeFailed:
+    mov     rax, 2
+    ret
+
+AInvept ENDP
 
 AInvVpid PROC
     invvpid rcx, oword ptr [rdx]

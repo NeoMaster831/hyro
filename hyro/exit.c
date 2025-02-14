@@ -72,7 +72,7 @@ BOOL VmxExitHandler(PGUEST_REGS pGuestRegs) {
     HdlrIoInstruction(pVCpu);
   } break;
   case VMX_EXIT_REASON_EPT_VIOLATION: {
-    // TODO: will implement ept hook later
+    HdlrEptViolation(pVCpu);
   } break;
   case VMX_EXIT_REASON_EPT_MISCONFIGURATION: {
     HdlrEptMisconfiguration();

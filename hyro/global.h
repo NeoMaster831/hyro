@@ -410,16 +410,26 @@ void InjectBP();
 
 // #enddef
 
-#define INVVPID_STUFF
+#define INV_STUFF
 
 extern unsigned char inline AInvVpid(unsigned long Type, void *Descriptors);
+extern unsigned char inline AInvept(unsigned long Type, void* Descriptors);
 
 /*
  * @brief perform InvVpid
  * @param Type - The type of the operation
  * @param Descriptor - The descriptor
+ * @return `UCHAR` - The status - 0 if successful, otherwise the error code
  */
-void InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor);
+UCHAR InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor);
+
+/*
+ * @brief perform InvEpt
+ * @param Type - The type of the operation
+ * @param Descriptor - The descriptor
+ * @return `UCHAR` - The status - 0 if successful, otherwise the error code
+ */
+UCHAR InvEpt(INVEPT_TYPE Type, INVEPT_DESCRIPTOR* Descriptor);
 
 // #enddef
 
@@ -453,5 +463,9 @@ typedef enum _NMI_BROADCAST_ACTION_TYPE {
 
 #define HYRO_VMCALL_TEST 0x0
 #define HYRO_VMCALL_VMXOFF 0x1
+#define HYRO_VMCALL_EPT_ADDITION 0x2
+#define HYRO_VMCALL_EPT_REMOVAL 0x3
+#define HYRO_VMCALL_EPT_DISABLE 0x4
+#define HYRO_VMCALL_EPT_ENABLE 0x5
 
 // #enddef

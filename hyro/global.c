@@ -135,7 +135,7 @@ void InjectBP() {
                      EXCEPTION_VECTOR_DEBUG_BREAKPOINT, FALSE, 0);
 }
 
-void InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor) {
+UCHAR InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor) {
   INVVPID_DESCRIPTOR *TargetDescriptor = NULL;
   INVVPID_DESCRIPTOR ZeroDescriptor = {0};
 
@@ -145,7 +145,15 @@ void InvVpid(INVVPID_TYPE Type, INVVPID_DESCRIPTOR *Descriptor) {
     TargetDescriptor = Descriptor;
   }
 
-  AInvVpid(Type, TargetDescriptor);
+  return AInvVpid(Type, TargetDescriptor);
+}
+
+UCHAR InvEpt(INVEPT_TYPE Type, INVEPT_DESCRIPTOR* Descriptor) {
+  INVEPT_DESCRIPTOR ZeroDescriptor = { 0 };
+  if (!Descriptor) {
+    Descriptor = &ZeroDescriptor;
+  }
+  return AInvept(Type, Descriptor);
 }
 
 BOOL CheckAddressCanonical(UINT64 address) {

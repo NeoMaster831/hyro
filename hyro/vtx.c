@@ -150,6 +150,10 @@ BOOL VmxInitHypervisor() {
     return FALSE;
   }
 
+  if (!MEptHookInitialize()) {
+    return FALSE;
+  }
+
   KeGenericCallDpc(DpcInitVmxonIdPr, NULL);
 
   for (ULONG i = 0; i < processorCount; i++) {
@@ -210,7 +214,7 @@ BOOL VmxInitHypervisor() {
   }
 
   KeGenericCallDpc(DpcAVmxLaunchGuestIdPr, NULL);
-
+  
   AHyroVmcall(HYRO_VMCALL_TEST, 0x1337, 0x31337, 0x6974);
   // Individually test the vmcall
 
@@ -821,6 +825,8 @@ VOID VmxTerminate() {
   ULONG processorCount = KeQueryActiveProcessorCount(0);
 
   HV_LOG_INFO("Terminating the hypervisor");
+
+  MEptHookTerminate();
 
   KeGenericCallDpc(DpcVmxTerminateIdPr, NULL);
 
