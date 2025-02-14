@@ -36,14 +36,6 @@ PEPT_PML2_ENTRY EptGetPml2(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr);
 PEPT_PML1_ENTRY EptGetPml1(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr);
 
 /*
- * @brief Get the PML1 or PML2 entry
- * @param pEptPageTable - The EPT page table pointer
- * @param physicalAddr - The physical address
- * @return `PVOID` - The PML1 or PML2 entry
- */
-PVOID EptGetPml1OrPml2(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr, BOOL *isPml1);
-
-/*
  * @brief Check if the EPT is valid for large page
  * @param pfn - The page frame number
  * @return `BOOL` - TRUE if the operation was successful

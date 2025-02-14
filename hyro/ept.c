@@ -152,18 +152,6 @@ PEPT_PML1_ENTRY EptGetPml1(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr) {
   return pml1;
 }
 
-PVOID EptGetPml1OrPml2(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr, BOOL* isPml1) {
-  PEPT_PML1_ENTRY pml1Entry = EptGetPml1(pEptPageTable, physicalAddr);
-  if (!pml1Entry) {
-    *isPml1 = FALSE;
-    return (PVOID)EptGetPml2(pEptPageTable, physicalAddr);
-  }
-  else {
-    *isPml1 = TRUE;
-    return (PVOID)pml1Entry;
-  }
-}
-
 BOOL EptIsValidForLargePage(SIZE_T pfn) {
   SIZE_T startAddr = pfn * 512 * PAGE_SIZE;
   SIZE_T endAddr = startAddr + 512 * PAGE_SIZE - 1;
