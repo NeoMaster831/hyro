@@ -10,6 +10,8 @@
 #include "mem.h"
 #include "utils.h"
 
+#include "mepthook.h"
+
 /*
  * @brief PIN-Based Execution
  */

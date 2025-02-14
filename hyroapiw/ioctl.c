@@ -63,8 +63,12 @@ NTSTATUS IoctlHandle(_In_ PDEVICE_OBJECT DeviceObject, _In_ PIRP Irp) {
 
       if (outBufLength != sizeof(BOOL))
         goto INVALID_IOCTL;
-			*(BOOL*)ioBuf = HyroApiwTest();
-			Irp->IoStatus.Information = sizeof(BOOL);
+
+      BOOL result = HyroApiwTest();
+      result &= HyroApiwTestEpt();
+      *(BOOL*)ioBuf = result;
+
+      Irp->IoStatus.Information = sizeof(BOOL);
 
     } break;
 

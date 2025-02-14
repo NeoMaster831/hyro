@@ -122,6 +122,48 @@ PEPT_PML2_ENTRY EptGetPml2(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr) {
   return pml2Entry;
 }
 
+PEPT_PML1_ENTRY EptGetPml1(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr) {
+  SIZE_T i, j, k;
+  PEPT_PML2_ENTRY pml2;
+  PEPT_PML1_ENTRY pml1;
+  PEPT_PML2_POINTER pml2Pointer;
+
+  i = ADDRMASK_EPT_PML2_INDEX(physicalAddr);
+  j = ADDRMASK_EPT_PML3_INDEX(physicalAddr);
+  k = ADDRMASK_EPT_PML4_INDEX(physicalAddr);
+
+  if (k > 0)
+    return NULL;
+
+  pml2 = &pEptPageTable->pml2[j][i];
+
+  if (pml2->LargePage)
+    return NULL;
+
+  pml2Pointer = (PEPT_PML2_POINTER)pml2;
+  PHYSICAL_ADDRESS pml1Phys = { .QuadPart = pml2Pointer->PageFrameNumber * PAGE_SIZE };
+  pml1 = (PEPT_PML1_ENTRY)MmGetVirtualForPhysical(pml1Phys);
+
+  if (!pml1)
+    return NULL;
+
+  pml1 = &pml1[ADDRMASK_EPT_PML1_INDEX(physicalAddr)];
+
+  return pml1;
+}
+
+PVOID EptGetPml1OrPml2(PEPT_PAGE_TABLE pEptPageTable, SIZE_T physicalAddr, BOOL* isPml1) {
+  PEPT_PML1_ENTRY pml1Entry = EptGetPml1(pEptPageTable, physicalAddr);
+  if (!pml1Entry) {
+    *isPml1 = FALSE;
+    return (PVOID)EptGetPml2(pEptPageTable, physicalAddr);
+  }
+  else {
+    *isPml1 = TRUE;
+    return (PVOID)pml1Entry;
+  }
+}
+
 BOOL EptIsValidForLargePage(SIZE_T pfn) {
   SIZE_T startAddr = pfn * 512 * PAGE_SIZE;
   SIZE_T endAddr = startAddr + 512 * PAGE_SIZE - 1;

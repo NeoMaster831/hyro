@@ -35,6 +35,12 @@
     <Filter Include="Source Files\modules">
       <UniqueIdentifier>{9ae464f5-1c48-4b3e-9d37-ddc94ab8d48f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ds">
+      <UniqueIdentifier>{96d45f91-b278-4001-a613-70d2698f2873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ds">
+      <UniqueIdentifier>{f9f4e99a-f81e-4e7e-a513-0fb02beb562c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyro.inf">
@@ -66,6 +72,12 @@
     <ClCompile Include="hdlrhyrocall.c">
       <Filter>Source Files\handlers</Filter>
     </ClCompile>
+    <ClCompile Include="mepthook.c">
+      <Filter>Source Files\modules</Filter>
+    </ClCompile>
+    <ClCompile Include="dsll.c">
+      <Filter>Source Files\ds</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vtx.h">
@@ -94,6 +106,12 @@
     </ClInclude>
     <ClInclude Include="hdlrhyrocall.h">
       <Filter>Header Files\handlers</Filter>
+    </ClInclude>
+    <ClInclude Include="mepthook.h">
+      <Filter>Header Files\modules</Filter>
+    </ClInclude>
+    <ClInclude Include="dsll.h">
+      <Filter>Header Files\ds</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

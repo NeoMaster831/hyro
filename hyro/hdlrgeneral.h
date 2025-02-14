@@ -1,7 +1,10 @@
 #pragma once
 
 #include "global.h"
+
 #include "hdlrhyrocall.h"
+
+#include "mepthook.h"
 
 #include <intrin.h>
 
@@ -89,3 +92,9 @@ void HdlrVmxPreemptionTimerExpired(PVCPU pVCpu);
  * @param pVCpu - The virtual CPU pointer
  */
 void HdlrDirtyLogging(PVCPU pVCpu);
+
+/*
+ * @brief Handler for EPT violation
+ * @param pVCpu - The virtual CPU pointer
+ */
+void HdlrEptViolation(PVCPU pVCpu);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "global.h"
+#include "mepthook.h"
 
 // from `vtx.h`
 VOID VmxDisable(PVCPU pVCpu);
