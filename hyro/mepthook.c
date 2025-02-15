@@ -239,3 +239,62 @@ VOID MEptHookSynchronize() {
   HV_LOG_INFO("EPT invalidated");
   return;
 }
+
+#define A(a, b) a |= b
+BOOL MEptHookModifyHook(UINT64 physAddr, UINT64 hookCtxPhys) {
+  CR3 originalCr3 = { .AsUInt = __readcr3() };
+  UINT8 s = 0;
+  CR3 guestCr3 = { 0 };
+  PEPT_HOOK_PAGE pHook = MEptHookGetHook(physAddr);
+  PHYSICAL_ADDRESS hookCtxPhysStrt = { .QuadPart = hookCtxPhys };
+  PVOID hookCtx = MmMapIoSpace(hookCtxPhysStrt, PAGE_SIZE, MmNonCached);
+  BOOL wasActive = FALSE;
+
+  if (pHook == NULL) {
+    HV_LOG_ERROR("Hook does not exist for 0x%llx", physAddr);
+    return FALSE;
+  }
+
+  if (hookCtx == NULL) {
+    HV_LOG_ERROR("Failed to get virtual address for 0x%llx", hookCtxPhys);
+    return FALSE;
+  }
+
+  // Deactivate hook if it's active
+  if (pHook->active) {
+    MEptHookDeactivateHook(pHook);
+    wasActive = TRUE;
+  }
+
+  UNUSED_PARAMETER(s);
+
+  A(s, __vmx_vmread(VMCS_GUEST_CR3, &guestCr3.AsUInt));
+
+  // hookCtx is intended to be in kernel memory (which means CR3 doesn't mean at all)
+  // But it can be addressed in user mode, so we need to mitigate this.
+  __writecr3(guestCr3.AsUInt);
+
+  // SECURELY COPY THE HOOK CONTEXT
+  for (UINT64 i = 0; i < PAGE_SIZE; i++) {
+    PUCHAR p = (PUCHAR)hookCtx + i;
+    PUCHAR q = (PUCHAR)pHook->hookCtx + i;
+    if (MmIsAddressValid(p) == FALSE) {
+      HV_LOG_ERROR("Invalid hook context address (virtual address)");
+      return FALSE;
+    }
+    *q = *p;
+  }
+
+  // Restore the original CR3
+  __writecr3(originalCr3.AsUInt);
+
+  // Reactivate the hook if it was active
+  if (wasActive) {
+    MEptHookActivateHook(pHook);
+  }
+
+  HV_LOG_INFO("Modified hook context for 0x%llx", physAddr);
+
+  return TRUE;
+}
+#undef A

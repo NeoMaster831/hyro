@@ -53,6 +53,10 @@ BOOL HdlrHyclVmcall(PVCPU pVCpu) {
     MEptHookDeactivateHook(pEptHook);
     status = TRUE;
   } break;
+  case HYRO_VMCALL_EPT_MODIFY: {
+    HV_LOG_INFO("HYRO_VMCALL_EPT_MODIFY: physAddr - %llx, hookCtxPhys - %llx", param1, param2);
+    status = MEptHookModifyHook(param1, param2);
+  } break;
   default: {
     HV_LOG_ERROR("Unimplemented hyro vmcall");
   } break;

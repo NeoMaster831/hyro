@@ -109,3 +109,11 @@ VOID MEptHookTerminate();
  * @brief Synchronize EPT hooks with invept
  */
 VOID MEptHookSynchronize();
+
+/*
+ * @brief Modify EPT hook page
+ * @param physAddr - The physical address to modify
+ * @param hookCtxPhys - The hook context
+ * @return `BOOL` - TRUE if the operation was successful
+ */
+BOOL MEptHookModifyHook(UINT64 physAddr, UINT64 hookCtxPhys);

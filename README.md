@@ -7,5 +7,4 @@
 
 To Make:
 
-Context modification, Self Referencing Deadlock Mitigation,
-Change Linked List to Ordered Set (RBTree, ...)
+Self Referencing Deadlock Mitigation, Change Linked List to Ordered Set (RBTree, ...)
