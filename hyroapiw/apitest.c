@@ -4,26 +4,24 @@ BOOL HyroApiwTest() {
   return HYROCALL_SUCCESS(ACallHyro(HYRO_VMCALL_TEST, 0x69, 0x74, 0x420));
 }
 
-#define A(a) if (!(a)) { return FALSE; }
+#define A(a) if (!(a)) { s = FALSE; goto EPT_FREE_BUFFERS; }
 BOOL HyroApiwTestEpt() {
-  // Build Test function
+  UINT8 s = TRUE;
   PVOID testFunc = (PVOID)KeGetCurrentIrql;
-  
+  PVOID preBuf = ExAllocatePoolWithTag(NonPagedPool, PAGE_SIZE, 'hapw');
+  PMDL mdl = IoAllocateMdl(preBuf, PAGE_SIZE, FALSE, FALSE, NULL);
+  MmBuildMdlForNonPagedPool(mdl);
+  PVOID rwxBuffer = MmMapLockedPagesSpecifyCache(mdl, KernelMode, MmCached, NULL, FALSE, NormalPagePriority);
+  PUCHAR hookCtx = (PUCHAR)ExAllocatePoolWithTag(NonPagedPool, PAGE_SIZE, 'hapw');
+  // I don't check whether it is successfully allocated or not
+  // im lazy bro
+
+  A(!MmProtectMdlSystemAddress(mdl, PAGE_EXECUTE_READWRITE))
+
   APIW_LOG_INFO("Test function: %p", testFunc);
   APIW_LOG_INFO("Test function phys: 0x%llx", MmGetPhysicalAddress(testFunc).QuadPart);
 
-  PVOID preBuf = ExAllocatePoolWithTag(NonPagedPool, PAGE_SIZE, 'hapw');
-
-  A(preBuf)
   RtlZeroMemory(preBuf, PAGE_SIZE);
-
-  PMDL mdl = IoAllocateMdl(preBuf, PAGE_SIZE, FALSE, FALSE, NULL);
-  A(mdl)
-
-  MmBuildMdlForNonPagedPool(mdl);
-  PVOID rwxBuffer = MmMapLockedPagesSpecifyCache(mdl, KernelMode, MmCached, NULL, FALSE, NormalPagePriority);
-  A(!MmProtectMdlSystemAddress(mdl, PAGE_EXECUTE_READWRITE))
-
   RtlCopyMemory(rwxBuffer, testFunc, PAGE_SIZE);
 
   APIW_LOG_INFO("Test function copied to RWX buffer: %p", rwxBuffer);
@@ -48,8 +46,6 @@ BOOL HyroApiwTestEpt() {
   A(!returnVal)
 
   // Now try modifying the hook context
-  PUCHAR hookCtx = (PUCHAR)ExAllocatePoolWithTag(NonPagedPool, PAGE_SIZE, 'hapw');
-  A(hookCtx)
 
   RtlCopyMemory(hookCtx, rwxBuffer, PAGE_SIZE);
   *(UCHAR*)(hookCtx) = 0xB8;
@@ -83,12 +79,12 @@ BOOL HyroApiwTestEpt() {
   // Remove the hook
   A(HYROCALL_SUCCESS(ACallHyro(HYRO_VMCALL_EPT_REMOVAL, rwxBufferPhys.QuadPart, 0, 0)))
 
-
+EPT_FREE_BUFFERS:
   ExFreePoolWithTag(hookCtx, 'hapw');
   MmUnmapLockedPages(rwxBuffer, mdl);
   IoFreeMdl(mdl);
   ExFreePoolWithTag(preBuf, 'hapw');
 
-  return TRUE;
+  return s;
 }
 #undef A

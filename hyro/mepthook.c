@@ -274,16 +274,7 @@ BOOL MEptHookModifyHook(UINT64 physAddr, UINT64 hookCtxPhys) {
   // But it can be addressed in user mode, so we need to mitigate this.
   __writecr3(guestCr3.AsUInt);
 
-  // SECURELY COPY THE HOOK CONTEXT
-  for (UINT64 i = 0; i < PAGE_SIZE; i++) {
-    PUCHAR p = (PUCHAR)hookCtx + i;
-    PUCHAR q = (PUCHAR)pHook->hookCtx + i;
-    if (MmIsAddressValid(p) == FALSE) {
-      HV_LOG_ERROR("Invalid hook context address (virtual address)");
-      return FALSE;
-    }
-    *q = *p;
-  }
+  RtlCopyMemory(pHook->hookCtx, hookCtx, PAGE_SIZE);
 
   // Restore the original CR3
   __writecr3(originalCr3.AsUInt);
