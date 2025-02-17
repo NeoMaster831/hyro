@@ -3,6 +3,9 @@
 #include "global.h"
 
 #include "apitest.h"
+#include "apiept.h"
+#include "apigeneral.h"
+#include "apiggeneral.h"
 
 #include <ntddk.h>
 

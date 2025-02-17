@@ -2,6 +2,7 @@
 
 #include "global.h"
 #include "mepthook.h"
+#include "mgeneral.h"
 
 // from `vtx.h`
 VOID VmxDisable(PVCPU pVCpu);

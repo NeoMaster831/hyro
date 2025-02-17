@@ -126,6 +126,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="mem.c" />
     <ClCompile Include="mepthook.c" />
+    <ClCompile Include="mgeneral.c" />
     <ClCompile Include="vtx.c" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="ia32.h" />
     <ClInclude Include="mem.h" />
     <ClInclude Include="mepthook.h" />
+    <ClInclude Include="mgeneral.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vtx.h" />
   </ItemGroup>

@@ -57,6 +57,34 @@ BOOL HdlrHyclVmcall(PVCPU pVCpu) {
     HV_LOG_INFO("HYRO_VMCALL_EPT_MODIFY: physAddr - %llx, hookCtxPhys - %llx", param1, param2);
     status = MEptHookModifyHook(param1, param2);
   } break;
+  case HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS: {
+    HV_LOG_INFO("HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS: virtualAddress - %llx, cr3 - %llx, buffer - %llx", param1, param2, param3);
+    UINT64 result = MGeneralGetPhysicalAddress(param1, param2);
+    *(UINT64*)param3 = result;
+    status = TRUE;
+  } break;
+  case HYRO_VMCALL_GENERAL_ALLOC_NONPAGED_BUFFER: {
+    HV_LOG_INFO("HYRO_VMCALL_GENERAL_ALLOC_NONPAGED_BUFFER: size - %llx, buffer - %llx", param1, param2);
+    PVOID result = MGeneralAllocateNonPagedBuffer(param1);
+    *(PVOID*)param2 = result;
+    if (result) status = TRUE;
+  } break;
+  case HYRO_VMCALL_GENERAL_FREE_NONPAGED_BUFFER: {
+    HV_LOG_INFO("HYRO_VMCALL_GENERAL_FREE_NONPAGED_BUFFER: buffer - %llx", param1);
+    MGeneralFreeNonPagedBuffer((PVOID)param1);
+    status = TRUE;
+  } break;
+  case HYRO_VMCALL_GENERAL_COPY_NONPAGED_BUFFER: {
+    HV_LOG_INFO("HYRO_VMCALL_GENERAL_COPY_NONPAGED_BUFFER: dest - %llx, src - %llx, size - %llx", param1, param2, param3);
+    MGeneralCopyNonPagedBuffer((PVOID)param1, (PVOID)param2, param3);
+    status = TRUE;
+  } break;
+  case HYRO_VMCALL_GENERAL_EXECUTE_NONPAGED_BUFFER: {
+    HV_LOG_INFO("HYRO_VMCALL_GENERAL_EXECUTE_NONPAGED_BUFFER: buffer - %llx, maxExecuteLength - %llx, returnBuffer - %llx", param1, param2, param3);
+    UINT64 result = MGeneralExecuteNonPagedBuffer((PVOID)param1, (ULONG)param2);
+    *(UINT64*)param3 = result;
+    status = TRUE;
+  } break;
   default: {
     HV_LOG_ERROR("Unimplemented hyro vmcall");
   } break;

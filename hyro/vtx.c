@@ -153,6 +153,9 @@ BOOL VmxInitHypervisor() {
   if (!MEptHookInitialize()) {
     return FALSE;
   }
+  if (!MGeneralInitalize()) {
+    return FALSE;
+  }
 
   KeGenericCallDpc(DpcInitVmxonIdPr, NULL);
 
@@ -826,6 +829,7 @@ VOID VmxTerminate() {
 
   HV_LOG_INFO("Terminating the hypervisor");
 
+  MGeneralTerminate();
   MEptHookTerminate();
 
   KeGenericCallDpc(DpcVmxTerminateIdPr, NULL);

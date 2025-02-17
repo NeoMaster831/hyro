@@ -240,11 +240,7 @@ VOID MEptHookSynchronize() {
   return;
 }
 
-#define A(a, b) a |= b
 BOOL MEptHookModifyHook(UINT64 physAddr, UINT64 hookCtxPhys) {
-  CR3 originalCr3 = { .AsUInt = __readcr3() };
-  UINT8 s = 0;
-  CR3 guestCr3 = { 0 };
   PEPT_HOOK_PAGE pHook = MEptHookGetHook(physAddr);
   PHYSICAL_ADDRESS hookCtxPhysStrt = { .QuadPart = hookCtxPhys };
   PVOID hookCtx = MmMapIoSpace(hookCtxPhysStrt, PAGE_SIZE, MmNonCached);
@@ -266,18 +262,7 @@ BOOL MEptHookModifyHook(UINT64 physAddr, UINT64 hookCtxPhys) {
     wasActive = TRUE;
   }
 
-  UNUSED_PARAMETER(s);
-
-  A(s, __vmx_vmread(VMCS_GUEST_CR3, &guestCr3.AsUInt));
-
-  // hookCtx is intended to be in kernel memory (which means CR3 doesn't mean at all)
-  // But it can be addressed in user mode, so we need to mitigate this.
-  __writecr3(guestCr3.AsUInt);
-
   RtlCopyMemory(pHook->hookCtx, hookCtx, PAGE_SIZE);
-
-  // Restore the original CR3
-  __writecr3(originalCr3.AsUInt);
 
   // Reactivate the hook if it was active
   if (wasActive) {
@@ -288,4 +273,3 @@ BOOL MEptHookModifyHook(UINT64 physAddr, UINT64 hookCtxPhys) {
 
   return TRUE;
 }
-#undef A

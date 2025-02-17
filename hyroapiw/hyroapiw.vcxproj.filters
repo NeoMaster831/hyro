@@ -26,6 +26,12 @@
     <Filter Include="Source Files\asm">
       <UniqueIdentifier>{1f116d4e-3542-4072-88cb-16df012a23fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\api\guest">
+      <UniqueIdentifier>{5bb12551-ea9c-4265-bc6d-98be24dbdb6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\api\guest">
+      <UniqueIdentifier>{cf2fa8d9-93f2-4bfb-b14e-b9ed1321148b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Inf Include="hyroapiw.inf">
@@ -45,6 +51,15 @@
     <ClCompile Include="apitest.c">
       <Filter>Source Files\api</Filter>
     </ClCompile>
+    <ClCompile Include="apigeneral.c">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="apiept.c">
+      <Filter>Source Files\api</Filter>
+    </ClCompile>
+    <ClCompile Include="apiggeneral.c">
+      <Filter>Source Files\api\guest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="utils.h">
@@ -58,6 +73,15 @@
     </ClInclude>
     <ClInclude Include="apitest.h">
       <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="apigeneral.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="apiept.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="apiggeneral.h">
+      <Filter>Header Files\api\guest</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

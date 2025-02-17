@@ -109,12 +109,18 @@
     <FilesToPackage Include="$(TargetPath)" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="apiept.c" />
+    <ClCompile Include="apigeneral.c" />
+    <ClCompile Include="apiggeneral.c" />
     <ClCompile Include="apitest.c" />
     <ClCompile Include="global.c" />
     <ClCompile Include="ioctl.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="apiept.h" />
+    <ClInclude Include="apigeneral.h" />
+    <ClInclude Include="apiggeneral.h" />
     <ClInclude Include="apitest.h" />
     <ClInclude Include="global.h" />
     <ClInclude Include="ioctl.h" />

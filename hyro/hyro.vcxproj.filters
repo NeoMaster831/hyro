@@ -78,6 +78,9 @@
     <ClCompile Include="dsll.c">
       <Filter>Source Files\ds</Filter>
     </ClCompile>
+    <ClCompile Include="mgeneral.c">
+      <Filter>Source Files\modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vtx.h">
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="dsll.h">
       <Filter>Header Files\ds</Filter>
+    </ClInclude>
+    <ClInclude Include="mgeneral.h">
+      <Filter>Header Files\modules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,7 @@
 #include "utils.h"
 
 #include "mepthook.h"
+#include "mgeneral.h"
 
 /*
  * @brief PIN-Based Execution
