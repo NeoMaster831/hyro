@@ -58,9 +58,9 @@ BOOL HdlrHyclVmcall(PVCPU pVCpu) {
     status = MEptHookModifyHook(param1, param2);
   } break;
   case HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS: {
-    HV_LOG_INFO("HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS: virtualAddress - %llx, cr3 - %llx, buffer - %llx", param1, param2, param3);
-    UINT64 result = MGeneralGetPhysicalAddress(param1, param2);
-    *(UINT64*)param3 = result;
+    HV_LOG_INFO("HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS: virtualAddress - %llx, buffer - %llx", param1, param2);
+    UINT64 result = MGeneralGetPhysicalAddress(param1);
+    *(UINT64*)param2 = result;
     status = TRUE;
   } break;
   case HYRO_VMCALL_GENERAL_ALLOC_NONPAGED_BUFFER: {

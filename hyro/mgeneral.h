@@ -16,11 +16,10 @@ BOOL MGeneralInitalize();
 VOID MGeneralTerminate();
 
 /*
- * @brief Get the physical address of a virtual address
+ * @brief Get the physical address of a virtual address (NON PAGED MEMORY IN KERNEL, ATM)
  * @param virtualAddress - The virtual address
- * @param cr3 - The CR3 value you want to get
  */
-UINT64 MGeneralGetPhysicalAddress(UINT64 virtualAddress, UINT64 cr3);
+UINT64 MGeneralGetPhysicalAddress(UINT64 virtualAddress);
 
 /*
  * @brief Allocate non-paged buffer

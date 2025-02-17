@@ -1,9 +1,8 @@
 #include "apigeneral.h"
 
-UINT64 HyroApiwGnrGetPhysAddr(UINT64 virtualAddress, UINT64 cr3) {
+UINT64 HyroApiwGnrGetPhysAddr(UINT64 virtualAddress) {
   UINT64 buffer = 0;
-
-  BOOL status = HYROCALL_SUCCESS(ACallHyro(HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS, virtualAddress, cr3, (UINT64)&buffer));
+  BOOL status = HYROCALL_SUCCESS(ACallHyro(HYRO_VMCALL_GENERAL_GET_PHYSICAL_ADDRESS, virtualAddress, (UINT64)&buffer, 0));
   if (!status) {
     APIW_LOG_ERROR("Failed to get physical address");
     return 0;

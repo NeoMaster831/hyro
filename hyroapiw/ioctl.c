@@ -132,13 +132,12 @@ NTSTATUS IoctlHandle(_In_ PDEVICE_OBJECT DeviceObject, _In_ PIRP Irp) {
 
     case IOCTL_HYROAPI_GENERAL_GET_PHYSICAL_ADDRESS: {
 
-      if (inBufLength != sizeof(APIW_GET_PHYS_ADDR_REQUEST))
+      if (inBufLength != sizeof(UINT64))
         goto INVALID_IOCTL;
       if (outBufLength != sizeof(UINT64))
         goto INVALID_IOCTL;
 
-      PAPIW_GET_PHYS_ADDR_REQUEST req = (APIW_GET_PHYS_ADDR_REQUEST*)ioBuf;
-      UINT64 result = HyroApiwGnrGetPhysAddr(req->virtualAddress, req->cr3);
+      UINT64 result = HyroApiwGnrGetPhysAddr(*(UINT64*)ioBuf);
       *(UINT64*)ioBuf = result;
 
       Irp->IoStatus.Information = sizeof(UINT64);

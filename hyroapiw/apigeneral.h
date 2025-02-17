@@ -2,12 +2,7 @@
 
 #include "global.h"
 
-typedef struct _APIW_GET_PHYS_ADDR_REQUEST {
-  UINT64 virtualAddress;
-  UINT64 cr3;
-} APIW_GET_PHYS_ADDR_REQUEST, * PAPIW_GET_PHYS_ADDR_REQUEST;
-
-UINT64 HyroApiwGnrGetPhysAddr(UINT64 virtualAddress, UINT64 cr3);
+UINT64 HyroApiwGnrGetPhysAddr(UINT64 virtualAddress);
 
 PVOID HyroApiwGnrAllocNonPagedBuffer(SIZE_T size);
 

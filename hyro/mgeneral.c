@@ -8,24 +8,8 @@ VOID MGeneralTerminate() {
   return;
 }
 
-#define A(a, b) a |= b
-UINT64 MGeneralGetPhysicalAddress(UINT64 virtualAddress, UINT64 cr3) {
-  UINT8 s = 0;
-  UINT64 originalCr3 = __readcr3();
-  UINT64 targetCr3 = cr3;
-  UNUSED_PARAMETER(s);
-  
-  if (targetCr3 == 0) { // means the caller wants to use the current process's CR3
-    A(s, __vmx_vmread(VMCS_GUEST_CR3, &targetCr3));
-  }
-  __writecr3(targetCr3);
-  
-  UINT64 physAddr = MmGetPhysicalAddress((PVOID)virtualAddress).QuadPart;
-  HV_LOG_INFO("Converted Physical Address: %llx", physAddr);
-
-  __writecr3(originalCr3);
-
-  return physAddr;
+UINT64 MGeneralGetPhysicalAddress(UINT64 virtualAddress) {
+  return MmGetPhysicalAddress((PVOID)virtualAddress).QuadPart;
 }
 
 PVOID MGeneralAllocateNonPagedBuffer(UINT64 size) {
