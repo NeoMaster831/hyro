@@ -62,6 +62,62 @@ void HdlrMovCr(PVCPU pVCpu) {
 #undef A
 
 #define A(a, b) a |= b
+void HdlrRdmsr(PGUEST_REGS pGuestRegs) {
+  const UINT32 RESERVED_MSR_RANGE_LOW = 0x40000000;
+  const UINT32 RESERVED_MSR_RANGE_HIGH = 0x400000F0;
+  
+  MSR msr = { 0 };
+  UINT32 targetMsr;
+  UINT8 s = 0;
+
+  targetMsr = (UINT32)(pGuestRegs->rcx & 0xFFFFFFFF);
+  if (targetMsr <= 0x00001FFF ||
+    (0xC0000000 <= targetMsr && targetMsr <= 0xC0001FFF)
+    || (targetMsr >= RESERVED_MSR_RANGE_LOW &&
+      targetMsr <= RESERVED_MSR_RANGE_HIGH)) {
+
+    switch (targetMsr) {
+    case IA32_SYSENTER_CS:
+      A(s, __vmx_vmread(VMCS_GUEST_SYSENTER_CS, &msr.Flags));
+      break;
+    case IA32_SYSENTER_ESP:
+      A(s, __vmx_vmread(VMCS_GUEST_SYSENTER_ESP, &msr.Flags));
+      break;
+    case IA32_SYSENTER_EIP:
+      A(s, __vmx_vmread(VMCS_GUEST_SYSENTER_EIP, &msr.Flags));
+      break;
+    case IA32_GS_BASE:
+      A(s, __vmx_vmread(VMCS_GUEST_GS_BASE, &msr.Flags));
+      break;
+    case IA32_FS_BASE:
+      A(s, __vmx_vmread(VMCS_GUEST_FS_BASE, &msr.Flags));
+      break;
+    default: {
+
+      if (targetMsr < 0x1000 && BitTest((const LONG*)g_invalidMsrBitmap, targetMsr) != 0) {
+        InjectGP();
+        return;
+      }
+
+      msr.Flags = __readmsr(targetMsr);
+
+      pGuestRegs->rax = 0;
+      pGuestRegs->rdx = 0;
+      pGuestRegs->rax = msr.Fields.Low;
+      pGuestRegs->rdx = msr.Fields.High;
+
+    } break;
+
+    }
+  }
+  else {
+    InjectGP();
+    return;
+  }
+}
+#undef A
+
+#define A(a, b) a |= b
 void HdlrWrmsr(PGUEST_REGS pGuestRegs) {
   MSR msr = {0};
   UINT32 targetMsr;

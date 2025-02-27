@@ -28,6 +28,12 @@ void HdlrUnconditionalExit(PVCPU pVCpu);
 void HdlrMovCr(PVCPU pVCpu);
 
 /*
+ * @brief Handler for RDMSR instruction.
+ * @param pGuestRegs - The guest registers
+ */
+void HdlrRdmsr(PGUEST_REGS pGuestRegs);
+
+/*
  * @brief Handler for WRMSR instruction.
  * @param pGuestRegs - The guest registers
  */

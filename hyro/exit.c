@@ -56,7 +56,7 @@ BOOL VmxExitHandler(PGUEST_REGS pGuestRegs) {
     HdlrMovCr(pVCpu);
   } break;
   case VMX_EXIT_REASON_EXECUTE_RDMSR: {
-    // Do nothing
+    HdlrRdmsr(pVCpu->guestRegs);
   } break;
   case VMX_EXIT_REASON_IO_SMI:
   case VMX_EXIT_REASON_SMI: {
