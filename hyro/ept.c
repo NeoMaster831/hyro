@@ -301,7 +301,7 @@ BOOL EptInitialize() {
     g_arrVCpu[i].eptPointer = curEptp;
 
     HV_LOG_INFO("EPT initialized for VCPU[%d]", i);
-    HV_LOG_INFO("PageTable Struct: 0x%llx", pCurEptPageTable);
+    HV_LOG_INFO("PageTable Struct: 0x%p", pCurEptPageTable);
     HV_LOG_INFO("EPT Pointer: 0x%llx", curEptp.AsUInt);
   }
 

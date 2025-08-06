@@ -32,7 +32,7 @@ BOOL VmxAllocVCpuState() {
   }
 
   g_arrVCpu = arrVCpu;
-  HV_LOG_INFO("VCpu state allocated @ 0x%llx", arrVCpu);
+  HV_LOG_INFO("VCpu state allocated @ 0x%p", arrVCpu);
 
   return TRUE;
 }
@@ -160,7 +160,7 @@ BOOL VmxInitHypervisor() {
       HV_LOG_ERROR("Failed to allocate the VMM stack");
       return FALSE;
     }
-    HV_LOG_INFO("VMM stack allocated for VCPU[%d]: 0x%llx", i, pVCpu->vmmStack);
+    HV_LOG_INFO("VMM stack allocated for VCPU[%d]: 0x%p", i, pVCpu->vmmStack);
 
     pVCpu->msrBitmapVirt = VmxAllocMsrBitmap();
     if (pVCpu->msrBitmapVirt == NULL) {
@@ -168,7 +168,7 @@ BOOL VmxInitHypervisor() {
       return FALSE;
     }
     pVCpu->msrBitmapPhys = MmGetPhysicalAddress(pVCpu->msrBitmapVirt);
-    HV_LOG_INFO("MSR bitmap allocated for VCPU[%d]: 0x%llx", i,
+    HV_LOG_INFO("MSR bitmap allocated for VCPU[%d]: 0x%p", i,
                 pVCpu->msrBitmapVirt);
 
     if (!VmxAllocIoBitmaps(pVCpu)) {
@@ -180,28 +180,28 @@ BOOL VmxInitHypervisor() {
       HV_LOG_ERROR("Failed to allocate the host IDT");
       return FALSE;
     }
-    HV_LOG_INFO("Host IDT allocated for VCPU[%d]: 0x%llx", i, pVCpu->hostIdt);
+    HV_LOG_INFO("Host IDT allocated for VCPU[%d]: 0x%p", i, pVCpu->hostIdt);
 
     pVCpu->hostGdt = VmxAllocHostGdt();
     if (pVCpu->hostGdt == NULL) {
       HV_LOG_ERROR("Failed to allocate the host GDT");
       return FALSE;
     }
-    HV_LOG_INFO("Host GDT allocated for VCPU[%d]: 0x%llx", i, pVCpu->hostGdt);
+    HV_LOG_INFO("Host GDT allocated for VCPU[%d]: 0x%p", i, pVCpu->hostGdt);
 
     pVCpu->hostTss = VmxAllocHostTss();
     if (pVCpu->hostTss == NULL) {
       HV_LOG_ERROR("Failed to allocate the host TSS");
       return FALSE;
     }
-    HV_LOG_INFO("Host TSS allocated for VCPU[%d]: 0x%llx", i, pVCpu->hostTss);
+    HV_LOG_INFO("Host TSS allocated for VCPU[%d]: 0x%p", i, pVCpu->hostTss);
 
     pVCpu->hostInterruptStack = MemAlloc_ZNP(HOST_INTERRUPT_STACK_SIZE);
     if (pVCpu->hostInterruptStack == NULL) {
       HV_LOG_ERROR("Failed to allocate the host interrupt stack");
       return FALSE;
     }
-    HV_LOG_INFO("Host interrupt stack allocated for VCPU[%d]: 0x%llx", i,
+    HV_LOG_INFO("Host interrupt stack allocated for VCPU[%d]: 0x%p", i,
                 pVCpu->hostInterruptStack);
   }
 
@@ -231,13 +231,13 @@ BOOL VmxAllocVmxonRegion(PVMXON_REGION_DESCRIPTOR pVmxonRegDesc) {
   vmxonRegionPhys = MmGetPhysicalAddress(vmxonRegion);
 
   HV_LOG_INFO("VMXON region allocated");
-  HV_LOG_INFO("VMXON region: 0x%llx", vmxonRegion);
+  HV_LOG_INFO("VMXON region: 0x%p", vmxonRegion);
   HV_LOG_INFO("VMXON region physical address: 0x%llx",
               vmxonRegionPhys.QuadPart);
 
   vmxBasicMsr.AsUInt = __readmsr(IA32_VMX_BASIC);
 
-  HV_LOG_INFO("Revision Identifier: 0x%x", vmxBasicMsr.VmcsRevisionId);
+  HV_LOG_INFO("Revision Identifier: 0x%llx", vmxBasicMsr.VmcsRevisionId);
 
   *(UINT64 *)vmxonRegion = vmxBasicMsr.VmcsRevisionId;
 
@@ -263,12 +263,12 @@ BOOL VmxAllocVmcsRegion(PVMCS_REGION_DESCRIPTOR pVmcsRegDesc) {
   vmcsRegionPhys = MmGetPhysicalAddress(vmcsRegion);
 
   HV_LOG_INFO("VMCS region allocated");
-  HV_LOG_INFO("VMCS region: 0x%llx", vmcsRegion);
+  HV_LOG_INFO("VMCS region: 0x%p", vmcsRegion);
   HV_LOG_INFO("VMCS region physical address: 0x%llx", vmcsRegionPhys.QuadPart);
 
   vmxBasicMsr.AsUInt = __readmsr(IA32_VMX_BASIC);
 
-  HV_LOG_INFO("Revision Identifier: 0x%x", vmxBasicMsr.VmcsRevisionId);
+  HV_LOG_INFO("Revision Identifier: 0x%llx", vmxBasicMsr.VmcsRevisionId);
 
   *(UINT64 *)vmcsRegion = vmxBasicMsr.VmcsRevisionId;
 
@@ -293,14 +293,14 @@ BOOL VmxAllocIoBitmaps(PVCPU pVCpu) {
     return FALSE;
   }
   pVCpu->ioBitmapAPhys = MmGetPhysicalAddress(pVCpu->ioBitmapAVirt);
-  HV_LOG_INFO("I/O bitmap A allocated: 0x%llx", pVCpu->ioBitmapAVirt);
+  HV_LOG_INFO("I/O bitmap A allocated: 0x%p", pVCpu->ioBitmapAVirt);
   pVCpu->ioBitmapBVirt = MemAlloc_ZNP(PAGE_SIZE);
   if (pVCpu->ioBitmapBVirt == NULL) {
     HV_LOG_ERROR("Failed to allocate the I/O bitmap B");
     return FALSE;
   }
   pVCpu->ioBitmapBPhys = MmGetPhysicalAddress(pVCpu->ioBitmapBVirt);
-  HV_LOG_INFO("I/O bitmap B allocated: 0x%llx", pVCpu->ioBitmapBVirt);
+  HV_LOG_INFO("I/O bitmap B allocated: 0x%p", pVCpu->ioBitmapBVirt);
   return TRUE;
 }
 

@@ -34,7 +34,7 @@ void HdlrMovCr(PVCPU pVCpu) {
       A(s, __vmx_vmwrite(VMCS_CTRL_CR4_READ_SHADOW, *regPtr));
       break;
     default:
-      HV_LOG_WARNING("Unsupported CR register: %d", movCrQual.ControlRegister);
+      HV_LOG_WARNING("Unsupported CR register: %llu", movCrQual.ControlRegister);
       break;
     }
   } break;
@@ -50,12 +50,12 @@ void HdlrMovCr(PVCPU pVCpu) {
       A(s, __vmx_vmread(VMCS_GUEST_CR4, regPtr));
       break;
     default:
-      HV_LOG_WARNING("Unsupported CR register: %d", movCrQual.ControlRegister);
+      HV_LOG_WARNING("Unsupported CR register: %llu", movCrQual.ControlRegister);
       break;
     }
   } break;
   default:
-    HV_LOG_WARNING("Unsupported CR access type: %d", movCrQual.AccessType);
+    HV_LOG_WARNING("Unsupported CR access type: %llu", movCrQual.AccessType);
     break;
   }
 }
@@ -125,16 +125,6 @@ void HdlrWrmsr(PGUEST_REGS pGuestRegs) {
 void HdlrCpuid(PVCPU pVCpu) {
   INT32 cpuInfo[4] = {0};
   PGUEST_REGS pGuestRegs = pVCpu->guestRegs;
-  BOOL isHyrocall = FALSE;
-
-  isHyrocall =
-      (pGuestRegs->r10 ^ pGuestRegs->r11 ^ pGuestRegs->r12) ==
-      (HYRO_SIGNATURE_HIGH ^ HYRO_SIGNATURE_MEDIUM ^ HYRO_SIGNATURE_LOW);
-
-  if (isHyrocall) {
-    HdlrHyclCpuid(pVCpu);
-    return;
-  }
 
   __cpuidex(cpuInfo, (INT32)pGuestRegs->rax, (INT32)pGuestRegs->rcx);
 
