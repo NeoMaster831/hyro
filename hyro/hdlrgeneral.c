@@ -128,6 +128,11 @@ void HdlrCpuid(PVCPU pVCpu) {
 
   __cpuidex(cpuInfo, (INT32)pGuestRegs->rax, (INT32)pGuestRegs->rcx);
 
+  // For determination of VM escape
+  cpuInfo[1] = 'oryH';
+  cpuInfo[2] = 'oryH';
+  cpuInfo[3] = 0;
+
   pGuestRegs->rax = cpuInfo[0];
   pGuestRegs->rbx = cpuInfo[1];
   pGuestRegs->rcx = cpuInfo[2];
