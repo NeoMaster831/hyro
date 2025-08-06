@@ -9,6 +9,7 @@
 #include "global.h"
 #include "mem.h"
 #include "utils.h"
+#include "hdlrhyrocall.h"
 
 /*
  * @brief PIN-Based Execution
@@ -279,3 +280,5 @@ UINT64 VmxReturnStackPointerForVmxoff();
  * @return UINT64 - The instruction pointer
  */
 UINT64 VmxReturnInstructionPointerForVmxoff();
+
+extern void AHyroVmcall(UINT64 c, UINT64 p1, UINT64 p2, UINT64 p3);

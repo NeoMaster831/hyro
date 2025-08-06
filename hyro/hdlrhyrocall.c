@@ -19,10 +19,6 @@ BOOL HdlrHyclVmcall(PVCPU pVCpu) {
     HV_LOG_INFO("HYRO_VMCALL_TEST: %llx %llx %llx", param1, param2, param3);
     status = TRUE;
   } break;
-  case HYRO_VMCALL_VMXOFF: {
-    HV_LOG_WARNING("HYRO_VMCALL_VMXOFF: unimplemented");
-    status = TRUE;
-  } break;
   default: {
     HV_LOG_ERROR("Unimplemented hyro vmcall");
   } break;

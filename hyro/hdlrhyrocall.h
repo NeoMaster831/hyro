@@ -10,4 +10,3 @@
 BOOL HdlrHyclVmcall(PVCPU pVCpu);
 
 #define HYRO_VMCALL_TEST 0x0
-#define HYRO_VMCALL_VMXOFF 0x1
